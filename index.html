@@ -62,7 +62,7 @@ body::before{
 /* 巨型错位背景文字 */
 .bg-massive-text {
   position: fixed; top: -5vh; left: -5vw; z-index: -3; pointer-events: none;
-  font-family: var(--font-display); font-size: 35vw; line-height: 0.8;
+  font-family: var(--font-body); font-weight: 900; font-size: 30vw; line-height: 1;
   color: rgba(255,255,255,0.03); transform: skewX(-12deg);
   white-space: nowrap;
 }
@@ -134,7 +134,7 @@ body::before{
   background: var(--p3-white);
 }
 .prog-label{
-  font-family:var(--font-display); font-size:32px; letter-spacing:.05em; line-height: 1;
+  font-family:var(--font-body); font-weight: 900; font-size:32px; letter-spacing:.05em; line-height: 1;
 }
 .prog-track{
   flex:1; height: 8px; background: rgba(0,8,20,0.2); position:relative; overflow:hidden;
@@ -256,7 +256,7 @@ body::before{
   border-right: 6px solid var(--p3-cyan);
 }
 .q-note::before{
-  content:'ANALYSIS'; font-family:var(--font-display); font-size:24px; line-height: 1;
+  content:'战术解析'; font-family:var(--font-body); font-weight: 900; font-size:24px; line-height: 1;
   color:var(--p3-accent); display:block; margin-bottom:8px;
 }
 .q-note.vis{display:block; animation:fade-up .4s ease both}
@@ -271,7 +271,7 @@ body::before{
 
 .btn-submit{
   pointer-events:all; background: var(--p3-white); color: var(--p3-dark);
-  border: none; padding: 16px 60px; font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  border: none; padding: 16px 60px; font-family:var(--font-body); font-weight: 900; font-size:32px; letter-spacing:.05em;
   transform: skewX(-15deg); cursor:none; transition: all .2s;
   box-shadow: -6px 6px 0 var(--p3-accent);
 }
@@ -305,7 +305,7 @@ body::before{
   padding: 4px 16px; margin-bottom: 16px; line-height: 1;
 }
 .result-title{
-  font-family:var(--font-display); font-size:clamp(60px,10vw,100px); line-height:0.9;
+  font-family:var(--font-body); font-weight: 900; font-size:clamp(50px,8vw,80px); line-height:1;
   color:var(--p3-white); letter-spacing:.02em; text-shadow: -4px 4px 0 var(--p3-cyan);
 }
 .result-desc{
@@ -328,12 +328,12 @@ body::before{
 .score-box:nth-child(2) .score-val{color: var(--p3-cyan);}
 .score-box:nth-child(3) .score-val{color: var(--p3-accent);}
 .score-label{
-  font-size:18px; color:var(--p3-dark); text-transform:uppercase; margin-top:8px; font-family:var(--font-bold); line-height: 1;
+  font-size:18px; color:var(--p3-dark); text-transform:uppercase; margin-top:8px; font-family:var(--font-body); font-weight: 900; line-height: 1;
 }
 
 /* Chapter breakdown */
 .breakdown-title{
-  font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  font-family:var(--font-body); font-weight: 900; font-size:32px; letter-spacing:.05em;
   color:var(--p3-cyan); padding: 8px 0; border-bottom: 4px solid var(--p3-white);
   margin-bottom:24px; transform: skewX(-5deg);
 }
@@ -360,7 +360,7 @@ body::before{
 .btn-retry{
   display:block; margin: 60px auto 0;
   background: var(--p3-accent); color: var(--p3-white); border: none;
-  padding: 16px 60px; font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  padding: 16px 60px; font-family:var(--font-body); font-weight: 900; font-size:32px; letter-spacing:.05em;
   transform: skewX(-15deg); cursor:none; transition: all .2s;
   box-shadow: -6px 6px 0 var(--p3-dark);
 }
@@ -390,8 +390,8 @@ body::before{
 
 <!-- High Contrast Background Elements -->
 <div class="halftone-bg"></div>
-<div class="bg-massive-text">DONE AND DUSTED</div>
-<div class="bg-massive-text bottom">MASS DESTRUCTION</div>
+<div class="bg-massive-text">尘埃落定</div>
+<div class="bg-massive-text bottom">破坏殆尽</div>
 
 <!-- Sea of Souls Floating Particles -->
 <div class="sea-particles" id="particles"></div>
@@ -404,7 +404,7 @@ body::before{
   <header class="site-header">
     <div class="header-hero-img"></div>
     <div class="site-header-content">
-      <div class="header-tag">PERSONA 3 RELOAD TEST</div>
+      <div class="header-tag">星月夜核心测试</div>
       <h1 class="site-title">STAR<br><span>NIGHT</span></h1>
       <div class="header-rule">星月夜老嗨测试</div>
     </div>
@@ -412,7 +412,7 @@ body::before{
 
   <!-- PROGRESS -->
   <div class="progress-panel" id="prog-panel">
-    <div class="prog-label">ANALYZE</div>
+    <div class="prog-label">解析进度</div>
     <div class="prog-track">
       <div class="prog-fill" id="prog-fill" style="width:0%"></div>
     </div>
@@ -425,7 +425,7 @@ body::before{
   <!-- SUBMIT BAR -->
   <div class="submit-bar" id="submit-bar">
     <button class="btn-submit" id="btn-submit" disabled>
-      EXECUTE
+      执行指令
     </button>
   </div>
 
@@ -505,12 +505,12 @@ const QS = [
 const LABELS = ['A','B','C','D'];
 const CH_ORDER = ["玉衡篇","天璇篇","天玑篇","天枢篇","天权篇","开阳篇","综合"];
 const RANKS = [
-  {min:0, max:7,  icon:"◈", title:"INITIATE",     sub:"潜意识之海——才踏入星月夜的大门，好戏还在后面！"},
-  {min:8, max:14, icon:"◆", title:"AWAKENED",     sub:"人格觉醒——已对主线剧情有基本了解，继续深挖！"},
-  {min:15,max:21, icon:"◇◆", title:"TRAVELER",   sub:"暗影行者——掌握了大部分关键设定，是位真正的玩家。"},
-  {min:22,max:27, icon:"★",  title:"VETERAN",    sub:"资深探索者——细节把握精准，各章故事融会贯通。"},
-  {min:28,max:31, icon:"★★", title:"GUARDIAN",   sub:"天鹅绒室贵客——几乎无懈可击，只差临门一脚！"},
-  {min:32,max:32, icon:"★★★","title":"WILD CARD",sub:"不羁之绊·完美星辰——全题命中，真正的资深玩家，向你致敬！"}
+  {min:0, max:7,  icon:"◈", title:"初入潜意识",     sub:"潜意识之海——才踏入星月夜的大门，好戏还在后面！"},
+  {min:8, max:14, icon:"◆", title:"人格觉醒",     sub:"人格觉醒——已对主线剧情有基本了解，继续深挖！"},
+  {min:15,max:21, icon:"◇◆", title:"暗影行者",   sub:"暗影行者——掌握了大部分关键设定，是位真正的玩家。"},
+  {min:22,max:27, icon:"★",  title:"资深探索者",    sub:"资深探索者——细节把握精准，各章故事融会贯通。"},
+  {min:28,max:31, icon:"★★", title:"天鹅绒贵客",   sub:"天鹅绒室贵客——几乎无懈可击，只差临门一脚！"},
+  {min:32,max:32, icon:"★★★",title:"不羁之绊",sub:"不羁之绊·完美星辰——全题命中，真正的资深玩家，向你致敬！"}
 ];
 
 /* ═══ STATE ════════════════════════════════════════ */
@@ -532,7 +532,7 @@ function render(){
       div.innerHTML = `
         <div class="chap-banner-img" style="background-image: url('${CHAP_BG[q.ch] || 'EP1.jpg'}');"></div>
         <div class="chap-banner-content">
-          <div class="chap-icon">/ TARGET</div>
+          <div class="chap-icon">/ 目标区域</div>
           <div class="chap-name">${q.ch}</div>
         </div>`;
       body.appendChild(div);
@@ -647,7 +647,7 @@ function showResult(correct){
     <div class="result-hero">
       <div class="result-hero-img"></div>
       <div class="result-hero-content">
-        <div class="result-rank-tag">FINAL SCORE</div>
+        <div class="result-rank-tag">最终评价</div>
         <div class="result-title">${rank.title}</div>
         <div class="result-desc">${rank.sub}</div>
       </div>
@@ -656,28 +656,28 @@ function showResult(correct){
     <div class="score-grid">
       <div class="score-box">
         <span class="score-val anim" id="sv-score">0</span>
-        <div class="score-label">TOTAL SCORE</div>
+        <div class="score-label">总得分</div>
       </div>
       <div class="score-box">
         <span class="score-val anim" id="sv-correct">0</span>
-        <div class="score-label">CORRECT</div>
+        <div class="score-label">答对题数</div>
       </div>
       <div class="score-box">
         <span class="score-val anim" id="sv-wrong">0</span>
-        <div class="score-label">WRONG</div>
+        <div class="score-label">答错题数</div>
       </div>
       <div class="score-box">
         <span class="score-val anim" id="sv-pct">0%</span>
-        <div class="score-label">ACCURACY</div>
+        <div class="score-label">正确率</div>
       </div>
     </div>
 
     <div>
-      <div class="breakdown-title">ANALYSIS BREAKDOWN</div>
+      <div class="breakdown-title">战况详细解析</div>
       ${chHtml}
     </div>
 
-    <button class="btn-retry" onclick="retry()">REBOOT SYSTEM</button>
+    <button class="btn-retry" onclick="retry()">系统重启</button>
   `;
 
   panel.classList.add('vis');
