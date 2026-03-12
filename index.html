@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>星月夜 · 资深玩家挑战问卷 (Persona Style)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+SC:wght@400;700;900&family=Oswald:ital,wght@1,700&display=swap" rel="stylesheet">
+
+<style>
+/* ═══ P5 THEME VARS ═══════════════════════════════════ */
+:root {
+  --p5-red: #e60012;
+  --p5-black: #000000;
+  --p5-dark: #1a1a1a;
+  --p5-white: #ffffff;
+  --p5-grey: #cccccc;
+  --correct: #00e676;
+  --wrong: #ff1744;
+  --font-display: 'Oswald', 'Bebas Neue', sans-serif;
+  --font-body: 'Noto Sans SC', sans-serif;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: var(--font-body);
+  background: var(--p5-black);
+  color: var(--p5-white);
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+
+/* Halftone Background */
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background-image: radial-gradient(var(--p5-dark) 2px, transparent 2px);
+  background-size: 10px 10px;
+  z-index: 0; pointer-events: none;
+}
+
+/* Dynamic Red Slash */
+.bg-slash {
+  position: fixed; top: -10%; left: -20%;
+  width: 60%; height: 150%;
+  background: var(--p5-red);
+  transform: skewX(-15deg);
+  z-index: 0; pointer-events: none;
+  box-shadow: 20px 0 0 var(--p5-white);
+}
+
+#app {
+  position: relative; z-index: 10;
+  max-width: 820px; margin: 0 auto;
+  padding: 0 24px 120px;
+}
+
+/* ═══ HEADER ═══════════════════════════════════════ */
+.site-header { padding: 60px 0 40px; position: relative; }
+.header-bg-text {
+  position: absolute; top: 10px; left: -20px;
+  font-family: var(--font-display);
+  font-size: 140px; font-style: italic;
+  color: transparent;
+  -webkit-text-stroke: 2px rgba(255,255,255,0.1);
+  pointer-events: none;
+  transform: skewX(-10deg);
+}
+.header-tag {
+  display: inline-block;
+  background: var(--p5-white);
+  color: var(--p5-black);
+  font-family: var(--font-body); font-weight: 900;
+  font-size: 14px; letter-spacing: 0.1em;
+  padding: 6px 16px;
+  transform: skewX(-15deg);
+  margin-bottom: 16px;
+  border: 3px solid var(--p5-black);
+  box-shadow: 4px 4px 0 var(--p5-red);
+}
+.site-title {
+  font-family: var(--font-display);
+  font-size: clamp(60px, 10vw, 90px);
+  color: var(--p5-white);
+  text-transform: uppercase;
+  text-shadow: 6px 6px 0 var(--p5-red), -2px -2px 0 var(--p5-black);
+  transform: skewX(-10deg);
+  line-height: 1;
+}
+
+/* ═══ PROGRESS ══════════════════════════════════════ */
+.progress-panel {
+  display: flex; align-items: center; gap: 16px;
+  margin-bottom: 40px; padding: 16px 24px;
+  background: var(--p5-white);
+  border: 4px solid var(--p5-black);
+  box-shadow: 8px 8px 0 var(--p5-red);
+  transform: skewX(-5deg);
+}
+.prog-label {
+  font-family: var(--font-display); font-size: 20px;
+  color: var(--p5-black); font-style: italic;
+}
+.prog-track {
+  flex: 1; height: 16px; background: var(--p5-grey);
+  border: 2px solid var(--p5-black);
+}
+.prog-fill {
+  height: 100%; background: var(--p5-red);
+  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+.prog-count {
+  font-family: var(--font-display); font-size: 24px;
+  color: var(--p5-red); font-style: italic;
+}
+
+/* ═══ QUESTIONS ═════════════════════════════════════ */
+.chapter-divider {
+  background: var(--p5-black);
+  color: var(--p5-white);
+  display: inline-block;
+  padding: 8px 24px;
+  font-family: var(--font-display); font-size: 24px;
+  transform: skewX(-15deg);
+  border-left: 8px solid var(--p5-red);
+  margin: 40px 0 20px;
+}
+.chap-name { transform: skewX(15deg); font-style: italic; }
+
+.q-card {
+  background: var(--p5-white);
+  border: 4px solid var(--p5-black);
+  margin-bottom: 24px;
+  position: relative;
+  box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
+  transition: transform 0.2s;
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+}
+.q-card:hover { transform: translateX(5px) translateY(-5px); box-shadow: 10px 10px 0 var(--p5-red); }
+.q-inner { padding: 30px; position: relative; z-index: 2; }
+
+.q-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+.q-num {
+  font-family: var(--font-display); font-size: 60px;
+  color: var(--p5-red); line-height: 0.8; font-style: italic;
+  text-shadow: 3px 3px 0 var(--p5-black);
+}
+.q-text {
+  font-size: 18px; font-weight: 700;
+  color: var(--p5-black); margin-bottom: 24px; line-height: 1.6;
+}
+
+/* ═══ OPTIONS ════════════════════════════════════════ */
+.options { display: flex; flex-direction: column; gap: 12px; }
+.opt {
+  display: flex; align-items: stretch;
+  background: var(--p5-dark); cursor: pointer;
+  border: 3px solid var(--p5-black);
+  transform: skewX(-3deg);
+  transition: all 0.1s;
+}
+.opt input[type=radio] { display: none; }
+.opt-key {
+  width: 50px; background: var(--p5-black);
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-display); font-size: 24px;
+  color: var(--p5-white); font-style: italic;
+  transition: all 0.2s;
+}
+.opt-text {
+  padding: 12px 16px; font-size: 16px; font-weight: 700;
+  color: var(--p5-white); flex: 1; transform: skewX(3deg);
+}
+
+.opt:hover { background: var(--p5-red); transform: skewX(-3deg) scale(1.02); margin-left: 10px; }
+.opt:hover .opt-key { background: var(--p5-white); color: var(--p5-red); }
+
+/* SELECTED */
+.opt.selected { background: var(--p5-red); border-color: var(--p5-white); transform: skewX(-3deg) scale(1.02); margin-left: 10px; }
+.opt.selected .opt-key { background: var(--p5-white); color: var(--p5-red); }
+
+/* ANSWER STATES */
+.opts.done .opt { pointer-events: none; }
+.opt.correct-ans { background: var(--correct) !important; color: var(--p5-black); }
+.opt.correct-ans .opt-key { background: var(--p5-black) !important; color: var(--correct); }
+.opt.wrong-ans { background: var(--p5-dark) !important; opacity: 0.5; text-decoration: line-through; }
+.opt.reveal-ans { background: var(--correct) !important; border-color: var(--p5-white); }
+
+.q-note {
+  display: none; margin-top: 20px; padding: 16px;
+  background: var(--p5-black); color: var(--p5-white);
+  border-left: 6px solid var(--p5-red);
+  font-weight: 700; font-size: 14px; transform: skewX(-2deg);
+}
+.q-note.vis { display: block; animation: slide-up 0.3s forwards; }
+
+/* ═══ SUBMIT ════════════════════════════════════════ */
+.submit-bar {
+  position: fixed; bottom: 0; left: 0; right: 0; padding: 20px;
+  background: rgba(0,0,0,0.9); display: flex; justify-content: center; z-index: 500;
+}
+.submit-bar.hidden { display: none; }
+.btn-submit {
+  background: var(--p5-red); color: var(--p5-white);
+  border: 4px solid var(--p5-white); padding: 16px 48px;
+  font-family: var(--font-display); font-size: 28px; font-style: italic;
+  cursor: pointer; transform: skewX(-10deg);
+  transition: all 0.1s;
+}
+.btn-submit:not(:disabled):hover {
+  background: var(--p5-white); color: var(--p5-red); border-color: var(--p5-red);
+  transform: skewX(-10deg) scale(1.05);
+}
+.btn-submit:disabled { background: var(--p5-dark); border-color: var(--p5-grey); color: var(--p5-grey); cursor: not-allowed; }
+
+/* ═══ RESULT ════════════════════════════════════════ */
+#result { display: none; background: var(--p5-white); padding: 40px; border: 6px solid var(--p5-black); box-shadow: 15px 15px 0 var(--p5-red); position: relative; }
+#result.vis { display: block; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+
+.result-hero { text-align: center; border-bottom: 6px solid var(--p5-black); padding-bottom: 20px; margin-bottom: 30px; }
+.result-rank-tag { background: var(--p5-black); color: var(--p5-white); display: inline-block; padding: 8px 20px; font-weight: 900; transform: skewX(-10deg); margin-bottom: 20px; }
+.result-title { font-family: var(--font-display); font-size: 60px; color: var(--p5-red); text-transform: uppercase; text-shadow: 4px 4px 0 var(--p5-black); line-height: 1.1; }
+
+.score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
+.score-box { background: var(--p5-black); color: var(--p5-white); padding: 20px; text-align: center; transform: skewX(-5deg); border: 2px solid var(--p5-red); }
+.score-val { font-family: var(--font-display); font-size: 50px; color: var(--p5-red); }
+.score-label { font-weight: 900; font-size: 12px; }
+
+.btn-retry {
+  display: block; width: 100%; background: var(--p5-black); color: var(--p5-white);
+  border: none; padding: 20px; font-family: var(--font-display); font-size: 24px;
+  cursor: pointer; transform: skewX(-5deg); transition: 0.2s;
+}
+.btn-retry:hover { background: var(--p5-red); }
+
+@keyframes slide-up { from { opacity: 0; transform: translateY(20px) skewX(-2deg); } to { opacity: 1; transform: skewX(-2deg); } }
+@keyframes pop-in { from { opacity: 0; transform: scale(0.9) skewX(-2deg); } to { opacity: 1; transform: scale(1) skewX(0); } }
+</style>
+</head>
+<body>
+
+<div class="bg-slash"></div>
+
+<div id="app">
+  <header class="site-header">
+    <div class="header-bg-text">TAKE YOUR TIME</div>
+    <div class="header-tag">THE PHANTOM THIEVES OF HEARTS</div>
+    <h1 class="site-title">STAR NIGHT<br>CHALLENGE</h1>
+  </header>
+
+  <div class="progress-panel" id="prog-panel">
+    <div class="prog-label">MISSION</div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
+    <div class="prog-count" id="prog-count">0/32</div>
+  </div>
+
+  <div id="quiz-body"></div>
+
+  <div class="submit-bar" id="submit-bar">
+    <button class="btn-submit" id="btn-submit" disabled>CONFIRM ANSWERS</button>
+  </div>
+
+  <div id="result"></div>
+</div>
+
+<script>
+/* JS 数据与底层交互逻辑保持完整 */
+const QS = [
+  {id:1,ch:"玉衡篇",q:"陈一星在玉衡篇所修炼觉醒的特殊能力名称是？",o:["幻想原子【至微星】","地龙符·蚯蚓之力","灵蛇珠·莉莉之力","雷符·精精召唤"],a:0,n:"一星在玉衡篇终战后觉醒「幻想原子【至微星】」，是他个人战斗力的核心。"},
+  {id:2,ch:"玉衡篇",q:"叶继龙图谋利用什么来实现长生不死？",o:["天动仪的植物能量","龙脉","灵蛇珠的宇宙意识","还魂草"],a:1,n:"叶继龙的野心是操控叶家世代守护的龙脉，以此长生。"},
+  {id:3,ch:"玉衡篇",q:"「爱莉斯」在玉衡篇末尾登场时，她的真实身份是？",o:["陈丰氏族失散的后裔","死亡本身的具现化存在","天动仪的前任核心","叶家的远古守护神"],a:1,n:"爱莉斯是「死亡本身」的具现化，玉衡篇是她在整个北斗七星计划中的首次登场。"},
+  {id:4,ch:"玉衡篇",q:"叶寄真在日常生活方面有什么著名的短板？",o:["极度怕高，无法攀爬","烹饪能力极差，近乎为零","除修行以外的常识基本属于「濒危坏灭状态」","完全不懂怎么与人沟通"],a:2,n:"原文明确描述寄真「把时间都花在修行上面，其他知识基本属于频危坏灭状态」。"},
+  {id:5,ch:"玉衡篇",q:"小翠被解除「家妖束缚」之前，受到哪些限制？",o:["不能在夜间出现，且只能在符咒范围内活动","以叶家为核心，始终受制于家妖契约","行动范围限于叶家宅院，且需随传随到","必须以老妇形态示人，不能展示真实外貌"],a:1,n:"小翠是叶家的家妖，受家妖契约束缚，需遵从叶家的命令。一星劝说寄真解除了这个枷锁。"},
+  {id:6,ch:"玉衡篇",q:"一星以什么代价换取「叶家弟子」身份，免除被夺走记忆的危险？",o:["永久封印自己的魔力核","贡献一部分「力」给灵蛇珠","成为叶寄真的弟子，以此进入叶家体系","每月向叶家缴纳等量的灵力资源"],a:2,n:"一星以「成为叶寄真弟子」为代价，让叶家承认他的合法性，避免记忆被清除。"},
+  {id:7,ch:"天璇篇",q:"「莉莉」的真实身份是什么？",o:["人类灵魂转化而来的精灵","宇宙意识体「利维坦」的一个意识碎片","陈丰氏族失落的第七系力量","何罗鱼族裔的觉醒者"],a:1,n:"莉莉是宇宙级意识体「利维坦」的碎片，以刘莉香的身体为宿主。"},
+  {id:8,ch:"天璇篇",q:"天璇篇B线（悲剧线）中，一星进入利维坦意识空间后做了什么选择？",o:["强制唤醒莉莉，导致利维坦全面觉醒","选择不强制唤醒莉莉，代价是寿命缩短至三年","与莉莉签订永久契约，被困在意识空间内","摧毁利维坦的意识核，令莉莉彻底消失"],a:1,n:"B线中一星选择不强迫莉莉，代价是寿命被压缩至三年。雨夜独行，失去最重要的东西。"},
+  {id:9,ch:"天璇篇",q:"刘莉香通过灵蛇珠获得了什么额外能力？",o:["可以预知他人的死亡时刻","身体的物理能力被强化，且细胞活性增加、延缓衰老","可以自由穿行于不同平行世界","能感知他人的情感「旋律」"],a:1,n:"莉莉告诉莉香：附体时会增加细胞活性，延缓衰老——一星故意用这个理由说服爱美的莉香。"},
+  {id:10,ch:"天璇篇",q:"天璇篇反派「鲁滨逊·冯·瓦特」与利维坦之间的矛盾根源是什么？",o:["鲁滨逊试图摧毁利维坦以独占其宇宙能量","鲁滨逊误解了利维坦的意图，双方陷入不必要的对立","利维坦曾毁灭了鲁滨逊的家族","两者争夺同一条龙脉的控制权"],a:1,n:"鲁滨逊是因误解利维坦的意图而成为反派——他并非出于纯粹的邪恶，而是信息不对等导致的悲剧。"},
+  {id:11,ch:"天璇篇",q:"天璇篇共有多少章？",o:["15章","18章","20章","24章"],a:2,n:"天璇篇共二十章，是六篇中章节最多的之一。"},
+  {id:12,ch:"天玑篇",q:"唐雨诗拥有的特殊能力名称是什么？",o:["幻想原子·破律","拉赫西斯破律能力","芯片杀（Chip Breaker）","地龙符·种子之力"],a:1,n:"唐雨诗天生拥有「拉赫西斯破律能力」——来自命运三女神中负责「分配寿命」之神的破坏性异能。"},
+  {id:13,ch:"天玑篇",q:"天玑篇中，「爱莉丝」单人突击了哪个地方，且以完胜收场？",o:["飞来峰天动仪本体","黑月研究所","利维坦意识空间的边界","叶继龙的龙脉要塞"],a:1,n:"爱莉丝单人强攻黑月研究所，完胜。是天玑篇最高潮的场面之一。"},
+  {id:14,ch:"天玑篇",q:"天玑篇的正线结局是以什么场面收束的？",o:["唐雨诗与一星在月下握手","雨诗在雨中独自远去","机场的完满结局","两人在夜市街头分道扬镳"],a:2,n:"天玑篇正线的结局是机场完满结局，与天璇B线的「雨夜独行」形成鲜明对比。"},
+  {id:15,ch:"天玑篇",q:"prologe03中，小翠对慕容兰「摸坏电器」能力的判断是？",o:["后代将彻底丧失任何超自然潜力","这种特性可能遗传，子女有可能觉醒真正的魔力核","这只是普通的静电体质，与异能无关","后代将成为天生的修道师"],a:1,n:"小翠明确说：「这种特性可能遗传到你的后代，你的子女说不好会拥有魔力核。」"},
+  {id:16,ch:"天玑篇",q:"prologe03结尾，「阿九」与「阿帕」对一星的最终指令是什么？",o:["立即生擒目标","进入捕猎模式，暗中行刺","因证据不足，暂时进入监视模式","向上级申请清除许可"],a:2,n:"阿帕表示没有明确证据前不好出手，指令改为「主要目的为证据收集，进入监视模式」。"},
+  {id:17,ch:"天枢篇",q:"天动仪的「第三条规则」是什么？",o:["维持飞来峰的永续飞行","保护陈丰氏族的血脉延续","对背人伦者施以灭亡","以七名血脉者的心为燃料"],a:2,n:"天动仪三条规则：①维持自身运作存活；②维持内部环境均衡；③对背人伦者施以灭亡。第三条是老爷子以仇怨刻入的绝对命令。"},
+  {id:18,ch:"天枢篇",q:"「菲儿」的真实身份是什么？",o:["思薇三百年前收养的孤儿转化的灵体","天动仪的核心意识，三百年前已死去的孩子人格","陈丰氏族第七代家主的残留意识","飞来峰结界自动生成的人形守护者"],a:1,n:"菲儿三百年前已死，他的意识作为核心存放于天动仪之中。菲儿即天动仪，天动仪即菲儿。"},
+  {id:19,ch:"天枢篇",q:"一辉推理指出「另一个菲儿」的关键矛盾是什么？",o:["菲儿在多起案件中同时出现在两个地点","凶手制造密室时选了「拆窗」这个多余步骤，但下人房根本没有窗户——两重人格的信息差暴露了双重人格的存在","菲儿的鞋底留有与案发现场相同的特殊泥土","菲儿被追问时说出了只有凶手才知道的细节"],a:1,n:"密室手法选择了「拆窗」，但另一人格不知道下人房没有窗，才在不必要的地方布置了「密室」——这个信息差暴露了双重人格的存在。"},
+  {id:20,ch:"天枢篇",q:"一星说服思薇的最关键论据——「一芳与陈家没有血缘关系」，具体原因是什么？",o:["一芳是被思薇秘密调换的普通孤儿","一芳的母亲出轨后生下她，户籍上的父亲才有陈家血缘，她本人则没有","一芳的陈家血脉在三代前已被秘密剥夺","一芳其实是叶家远亲而非陈家后人"],a:1,n:"一星凭此论据点破：天动仪需要七名有血缘者，但其中一人实际无血缘，仪式从一开始就注定无法完成。"},
+  {id:21,ch:"天枢篇",q:"菲儿在告别时引用了《诗经》中的哪句诗？",o:["关关雎鸠，在河之洲","昔我往矣，杨柳依依，今我来思，雨雪霏霏","青青子衿，悠悠我心","蒹葭苍苍，白露为霜"],a:1,n:"菲儿选择「长眠」时，转身说：「昔我往矣，杨柳依依，今我来思，雨雪霏霏——一星哥，千万不要忘记菲儿哦。」"},
+  {id:22,ch:"天枢篇",q:"叶风在深渊底部领悟地龙符之力时，对「真正的强大」的回答包含以下哪个比喻？",o:["「大海比巨浪更强大，因为它包容一切」","「磨刀石比锋利的剑刃更强大，因为它能研磨出锋利」","「静水比急流更强大，因为它能反映天地」","「根比枝更强大，因为一切生命从此延伸」"],a:1,n:"叶风的回答：磨刀石比剑刃强大、水滴比岩石强大、种子比坚硬土地强大——真正的强大是执着与坚持。"},
+  {id:23,ch:"天权篇",q:"天权篇女主「吕清音」有什么特殊的说话方式？",o:["只能以数学公式表达情感","只能引用古典汉语诗文来表达自己的意思","说话时只能使用单音节词","只能通过书面文字与他人沟通"],a:1,n:"吕清音在图书馆古籍书库首次登场，始终以古文诗句作答，令一星和梦海大感困惑。"},
+  {id:24,ch:"天权篇",q:"吕清音初次帮一星解围时，说的是哪句古文？",o:["「非唯自乐，又能乐时。」","「梦见先君，飨而后馈。」","「亢龙有悔，知进退存亡。」","「昔我往矣，杨柳依依。」"],a:1,n:"「梦见先君，飨而后馈」典出颜回护粥的故事，意指「所见并非你以为的那样」——暗示三人的判断有误。"},
+  {id:25,ch:"天权篇",q:"天权篇终战中「亢龙有悔」与哪个设定高度呼应？",o:["凶手反复三次使用此成语作为暗号","一星三度以「亢龙有悔」令对手认识到过刚则折的道理，以此决出胜负","吕清音以此句封印了反派的意识","此成语是开启古老封印的密钥"],a:1,n:"「亢龙有悔」出自《易经》，意指「盛极必衰，知止为智」。天权篇以三读此句决定终战走向，与吕清音的说话方式高度呼应。"},
+  {id:26,ch:"天权篇",q:"思薇在prologe03中透露陈丰六个从族中有「不是人类」的一支，小翠的反应是？",o:["哈哈大笑，认为这是无稽之谈","少见地皱起眉头，一反常态地认真起来","立刻表示自己早已知晓此事","追问这支「非人类」是否与利维坦有关联"],a:1,n:"小翠平时总是笑嘻嘻，思薇说出「那个从族，不是人类」后，小翠「少见地皱起了眉头」，显示这个消息确实令她感到意外。"},
+  {id:27,ch:"开阳篇",q:"开阳篇的女主「桃蕊丝」是什么种族？",o:["何罗鱼","狐妖","狼人（亚人）","半龙"],a:2,n:"桃蕊丝是狼人（亚人），天枢篇中思薇曾在十余年前遇见幼年的她（称为「小桃」），感知到心中「混杂野性、血腥和杀戮的不祥旋律」，判断「这个孩子不是人类」。"},
+  {id:28,ch:"开阳篇",q:"开阳篇最终反派「安琪儿」的真实身份是什么？",o:["堕落的天使","羽蛇（Quetzalcoatl）","从人类进化而来的异能觉醒者","利维坦的另一意识碎片"],a:1,n:"安琪儿的真实身份是羽蛇（羽蛇神Quetzalcoatl），是开阳篇的主要反派。"},
+  {id:29,ch:"开阳篇",q:"开阳篇中重要的非人类角色「阿巴东」，他的身份是？",o:["何罗鱼族长","恶魔","古代修道师的遗体傀儡","龙脉的守护者"],a:1,n:"阿巴东是恶魔，开阳篇重要的非人类角色，与安琪儿（羽蛇）一起构成了故事的超自然核心。"},
+  {id:30,ch:"开阳篇",q:"开阳篇终战的胜利方式是通过什么实现的？",o:["以幻想原子·至微星将安琪儿封印于龙脉之中","以契约执行击败安琪儿","桃蕊丝觉醒狼人完全体将其压制","利用阿巴东的恶魔之力反噬安琪儿"],a:1,n:"开阳篇终战以契约执行的方式击败安琪儿，是整个六章中最具「谈判与约定」精神的终结方式。"},
+  {id:31,ch:"综合",q:"整个「北斗七星计划」共六篇，其中哪两篇属于EP1（最初两个平行世界）？",o:["天权篇·开阳篇","玉衡篇·天璇篇","天玑篇·天枢篇","玉衡篇·天玑篇"],a:1,n:"EP1=玉衡（女主叶寄真）+天璇（女主刘莉香）；EP2=天玑+天枢；EP3=天权+开阳。"},
+  {id:32,ch:"开阳篇",q:"开阳篇结局中，桃蕊丝向一星表达心意时说的是什么？",o:["「我要一直跟着少爷，直到永远。」","「我想当你的新娘！」","「下一次轮回，我还是会找到你的。」","「答应我，无论在哪个平行世界都要记住我。」"],a:1,n:"开阳篇的结局：桃蕊丝表白说「我想当你的新娘！」，是全六篇中最直接、最豪爽的告白。"},
+];
+
+const LABELS = ['A','B','C','D'];
+const RANKS = [
+  {min:0, max:7,  title:"INITIATE",     sub:"初识星月——才踏入星月夜的大门，好戏还在后面！"},
+  {min:8, max:14, title:"AWAKENED",     sub:"星光初现——已对主线剧情有基本了解，继续深挖！"},
+  {min:15,max:21, title:"TRAVELER",   sub:"七星行者——掌握了大部分关键设定，是位真正的玩家。"},
+  {min:22,max:27, title:"VETERAN",    sub:"资深星夜客——细节把握精准，各章故事融会贯通。"},
+  {min:28,max:31, title:"GUARDIAN",   sub:"天枢守护者——几乎无懈可击，只差临门一脚！"},
+  {min:32,max:32, title:"PHANTOM STAR",sub:"完美星辰·怪盗团荣誉成员——全题命中，向你致敬！"},
+];
+
+let ans = new Array(QS.length).fill(-1);
+let submitted = false;
+
+function render(){
+  const body = document.getElementById('quiz-body');
+  body.innerHTML = '';
+  let lastCh = '';
+
+  QS.forEach((q, qi) => {
+    if(q.ch !== lastCh){
+      lastCh = q.ch;
+      body.innerHTML += `<div class="chapter-divider"><div class="chap-name">${q.ch}</div></div>`;
+    }
+
+    const optsHtml = q.o.map((opt, oi) => `
+      <label class="opt" id="opt-${qi}-${oi}" data-qi="${qi}" data-oi="${oi}">
+        <input type="radio" name="q${qi}" value="${oi}">
+        <span class="opt-key">${LABELS[oi]}</span>
+        <span class="opt-text">${opt}</span>
+      </label>`).join('');
+
+    body.innerHTML += `
+      <div class="q-card" id="card-${qi}">
+        <div class="q-inner">
+          <div class="q-meta"><div class="q-num">Q${String(q.id).padStart(2,'0')}</div></div>
+          <div class="q-text">${q.q}</div>
+          <div class="options" id="opts-${qi}">${optsHtml}</div>
+          <div class="q-note" id="note-${qi}">Intel: ${q.n}</div>
+        </div>
+      </div>`;
+  });
+
+  document.querySelectorAll('.opt').forEach(lbl => {
+    lbl.addEventListener('click', () => {
+      if(submitted) return;
+      const qi = +lbl.dataset.qi, oi = +lbl.dataset.oi;
+      document.getElementById(`opts-${qi}`).querySelectorAll('.opt').forEach(l => l.classList.remove('selected'));
+      lbl.classList.add('selected');
+      lbl.querySelector('input').checked = true;
+      ans[qi] = oi;
+      updateProg();
+    });
+  });
+}
+
+function updateProg(){
+  const done = ans.filter(a=>a>=0).length;
+  document.getElementById('prog-fill').style.width = Math.round(done/QS.length*100)+'%';
+  document.getElementById('prog-count').innerText = `${done}/${QS.length}`;
+  document.getElementById('btn-submit').disabled = (done < QS.length);
+}
+
+document.getElementById('btn-submit').addEventListener('click', () => {
+  if(submitted) return;
+  submitted = true;
+  document.getElementById('submit-bar').classList.add('hidden');
+
+  let correct = 0;
+  QS.forEach((q, qi) => {
+    const chosen = ans[qi], right = q.a;
+    document.getElementById(`opts-${qi}`).classList.add('done');
+    if(chosen === right){
+      correct++;
+      document.getElementById(`opt-${qi}-${chosen}`).classList.add('correct-ans');
+    } else {
+      if(chosen >= 0) document.getElementById(`opt-${qi}-${chosen}`).classList.add('wrong-ans');
+      document.getElementById(`opt-${qi}-${right}`).classList.add('reveal-ans');
+    }
+    document.getElementById(`note-${qi}`).classList.add('vis');
+  });
+
+  showResult(correct);
+});
+
+function showResult(correct){
+  const rank = RANKS.find(r => correct >= r.min && correct <= r.max) || RANKS[0];
+  const panel = document.getElementById('result');
+  panel.innerHTML = `
+    <div class="result-hero">
+      <div class="result-rank-tag">MISSION CLEARED</div>
+      <div class="result-title">${rank.title}</div>
+      <div style="font-weight:700; margin-top:10px;">${rank.sub}</div>
+    </div>
+    <div class="score-grid">
+      <div class="score-box"><div class="score-val">${correct * 3}</div><div class="score-label">TOTAL SCORE</div></div>
+      <div class="score-box"><div class="score-val">${correct}</div><div class="score-label">CORRECT</div></div>
+      <div class="score-box"><div class="score-val">${QS.length - correct}</div><div class="score-label">WRONG</div></div>
+      <div class="score-box"><div class="score-val">${Math.round(correct/QS.length*100)}%</div><div class="score-label">ACCURACY</div></div>
+    </div>
+    <button class="btn-retry" onclick="location.reload()">RETRY MISSION</button>
+  `;
+  panel.classList.add('vis');
+  setTimeout(() => panel.scrollIntoView({behavior:'smooth',block:'start'}), 200);
+}
+
+render();
+updateProg();
+</script>
+</body>
+</html>
