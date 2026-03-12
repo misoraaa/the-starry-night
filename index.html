@@ -3,317 +3,521 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>星月夜 · 资深玩家挑战问卷 (Persona Style)</title>
+<title>星月夜 · 老嗨测试 (P3R Flat Vector Style)</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+SC:wght@400;700;900&family=Oswald:ital,wght@1,700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Noto+Sans+SC:wght@700;900&family=Teko:wght@500;700&display=swap" rel="stylesheet">
 
 <style>
-/* ═══ P5 THEME VARS ═══════════════════════════════════ */
-:root {
-  --p5-red: #e60012;
-  --p5-black: #000000;
-  --p5-dark: #1a1a1a;
-  --p5-white: #ffffff;
-  --p5-grey: #cccccc;
-  --correct: #00e676;
-  --wrong: #ff1744;
-  --font-display: 'Oswald', 'Bebas Neue', sans-serif;
+/* ═══ P3R THEME RESET & VARS ═══════════════════════════════════════ */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+
+:root{
+  /* P3R Strict Vector Palette */
+  --p3-dark: #000814;       /* 极致深邃的黑蓝 */
+  --p3-base-blue: #002d7a;  /* 基础海蓝 */
+  --p3-cyan: #00e5ff;       /* 核心亮青色 */
+  --p3-white: #ffffff;      /* 纯白 */
+  --p3-accent: #ff0055;     /* P3R标志性品红/亮红点缀 */
+  
+  --p3-correct: #00e5ff;
+  --p3-wrong: #ff0055;
+  
+  /* Typography */
+  --font-display: 'Anton', sans-serif;
+  --font-bold: 'Teko', sans-serif;
   --font-body: 'Noto Sans SC', sans-serif;
 }
 
-*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-body {
-  font-family: var(--font-body);
-  background: var(--p5-black);
-  color: var(--p5-white);
-  min-height: 100vh;
-  overflow-x: hidden;
-  cursor: crosshair;
+/* ═══ CURSOR ══════════════════════════════════════ */
+body{
+  cursor:none; background: var(--p3-base-blue); color: var(--p3-white); 
+  font-family: var(--font-body); min-height: 100vh; overflow-x: hidden;
+}
+#cursor{
+  position:fixed; width:20px; height:20px;
+  background: var(--p3-cyan);
+  mix-blend-mode: difference;
+  pointer-events:none; z-index:9999;
+  transform:translate(-50%,-50%);
+  transition:transform .1s ease-out;
+  border-radius: 50%;
+}
+#cursor.hovered{ transform:translate(-50%,-50%) scale(2.5); background: var(--p3-accent); }
+
+/* ═══ P3R BACKGROUND (FLAT & SHARP) ════════════════════════════════════ */
+/* 底部深色切块 */
+body::before{
+  content:''; position:fixed; inset:0;
+  background: var(--p3-dark);
+  clip-path: polygon(0 30vh, 100% 0, 100% 100%, 0 100%);
+  z-index:-5; pointer-events:none;
+}
+/* 半调网点背景 */
+.halftone-bg {
+  position: fixed; inset: 0; z-index: -4; pointer-events: none;
+  background-image: radial-gradient(var(--p3-cyan) 1.5px, transparent 1.5px);
+  background-size: 8px 8px; opacity: 0.15;
+}
+/* 巨型错位背景文字 */
+.bg-massive-text {
+  position: fixed; top: -5vh; left: -5vw; z-index: -3; pointer-events: none;
+  font-family: var(--font-display); font-size: 35vw; line-height: 0.8;
+  color: rgba(255,255,255,0.03); transform: skewX(-12deg);
+  white-space: nowrap;
+}
+.bg-massive-text.bottom { top: auto; bottom: -10vh; left: 10vw; color: rgba(0, 229, 255, 0.05); }
+
+/* 浮动气泡（扁平化矢量圆） */
+.sea-particles { position: fixed; inset: 0; pointer-events: none; z-index: -2; overflow: hidden; }
+.bubble {
+  position: absolute; bottom: -10%;
+  background: transparent; border: 2px solid var(--p3-cyan); border-radius: 50%;
+  animation: floatUp 12s linear infinite; opacity: 0.3;
+}
+@keyframes floatUp {
+  0% { transform: translateY(0) scale(0.5); opacity: 0; }
+  10% { opacity: 0.4; }
+  90% { opacity: 0.4; }
+  100% { transform: translateY(-120vh) scale(1.2); opacity: 0; }
 }
 
-/* Halftone Background */
-body::before {
-  content: '';
-  position: fixed; inset: 0;
-  background-image: radial-gradient(var(--p5-dark) 2px, transparent 2px);
-  background-size: 10px 10px;
-  z-index: 0; pointer-events: none;
+/* ═══ WRAPPER ══════════════════════════════════════ */
+#app{
+  position:relative; z-index:10; max-width:900px; margin:0 auto; padding:0 24px 140px;
 }
 
-/* Dynamic Red Slash */
-.bg-slash {
-  position: fixed; top: -10%; left: -20%;
-  width: 60%; height: 150%;
-  background: var(--p5-red);
-  transform: skewX(-15deg);
-  z-index: 0; pointer-events: none;
-  box-shadow: 20px 0 0 var(--p5-white);
+/* ═══ HEADER (P3R UI LAYOUT) ═══════════════════════════════════════ */
+.site-header{
+  position:relative; margin: 40px 0 60px; padding: 40px 0; display: flex; align-items: flex-end;
+}
+.header-hero-img {
+  position: absolute; right: -50px; top: 0; width: 60%; height: 120%;
+  background-image: url('EP1.jpg'); background-size: cover; background-position: center;
+  clip-path: polygon(25% 0, 100% 0, 100% 100%, 0 100%);
+  z-index: 1; filter: contrast(1.1) saturate(1.2);
+}
+.header-hero-img::after {
+  content:''; position: absolute; inset: 0;
+  background: var(--p3-base-blue); mix-blend-mode: screen; opacity: 0.4;
+}
+.site-header-content { position: relative; z-index: 2; width: 70%; transform: skewX(-10deg); }
+
+.header-tag{
+  display:inline-block; background: var(--p3-accent); color: var(--p3-white);
+  font-family:var(--font-body); font-weight: 900; font-size:16px; letter-spacing:.15em;
+  padding: 4px 16px; margin-bottom: 8px;
+}
+.site-title{
+  font-family:var(--font-display); font-size:clamp(60px,12vw,130px);
+  letter-spacing:.02em; line-height:0.85; color:var(--p3-white);
+  text-transform:uppercase; margin-left: -5px;
+  text-shadow: -4px 4px 0 var(--p3-dark);
+}
+.site-title span{ color: var(--p3-cyan); }
+.header-rule{
+  display:flex; align-items:center; gap:16px; margin-top:20px;
+  background: var(--p3-white); padding: 8px 16px; width: fit-content;
+  color: var(--p3-dark); font-family: var(--font-bold); font-size:20px; letter-spacing:.1em;
 }
 
-#app {
-  position: relative; z-index: 10;
-  max-width: 820px; margin: 0 auto;
-  padding: 0 24px 120px;
-}
-
-/* ═══ HEADER ═══════════════════════════════════════ */
-.site-header { padding: 60px 0 40px; position: relative; }
-.header-bg-text {
-  position: absolute; top: 10px; left: -20px;
-  font-family: var(--font-display);
-  font-size: 140px; font-style: italic;
-  color: transparent;
-  -webkit-text-stroke: 2px rgba(255,255,255,0.1);
-  pointer-events: none;
+/* ═══ PROGRESS HUD ══════════════════════════════════════ */
+.progress-panel{
+  display:flex; align-items:center; gap:24px; margin-bottom:60px;
+  padding: 16px 32px; background: var(--p3-cyan); color: var(--p3-dark);
   transform: skewX(-10deg);
+  box-shadow: -8px 8px 0 rgba(0,0,0,0.5);
+  position: relative; overflow: hidden;
 }
-.header-tag {
-  display: inline-block;
-  background: var(--p5-white);
-  color: var(--p5-black);
-  font-family: var(--font-body); font-weight: 900;
-  font-size: 14px; letter-spacing: 0.1em;
-  padding: 6px 16px;
-  transform: skewX(-15deg);
-  margin-bottom: 16px;
-  border: 3px solid var(--p5-black);
-  box-shadow: 4px 4px 0 var(--p5-red);
+.progress-panel::after {
+  content:''; position:absolute; top:0; right:0; width: 40px; height: 100%;
+  background: var(--p3-white);
 }
-.site-title {
-  font-family: var(--font-display);
-  font-size: clamp(60px, 10vw, 90px);
-  color: var(--p5-white);
-  text-transform: uppercase;
-  text-shadow: 6px 6px 0 var(--p5-red), -2px -2px 0 var(--p5-black);
-  transform: skewX(-10deg);
-  line-height: 1;
+.prog-label{
+  font-family:var(--font-display); font-size:32px; letter-spacing:.05em; line-height: 1;
+}
+.prog-track{
+  flex:1; height: 8px; background: rgba(0,8,20,0.2); position:relative; overflow:hidden;
+}
+.prog-fill{
+  height:100%; background: var(--p3-dark); transition:width .4s ease-out;
+}
+.prog-count{
+  font-family:var(--font-display); font-size:40px; line-height: 1; margin-right: 20px;
 }
 
-/* ═══ PROGRESS ══════════════════════════════════════ */
-.progress-panel {
-  display: flex; align-items: center; gap: 16px;
-  margin-bottom: 40px; padding: 16px 24px;
-  background: var(--p5-white);
-  border: 4px solid var(--p5-black);
-  box-shadow: 8px 8px 0 var(--p5-red);
-  transform: skewX(-5deg);
+/* ═══ CHAPTER CUT-IN BANNER ═══════════════════════════════ */
+.chap-banner{
+  position: relative; height: 140px; margin: 80px 0 40px;
+  background: var(--p3-white); transform: skewX(-10deg);
+  display: flex; align-items: center; padding: 0 40px;
+  box-shadow: -6px 6px 0 var(--p3-accent);
 }
-.prog-label {
-  font-family: var(--font-display); font-size: 20px;
-  color: var(--p5-black); font-style: italic;
+.chap-banner-img {
+  position: absolute; right: 0; top: -30px; bottom: 0; width: 55%; height: calc(100% + 60px);
+  background-size: cover; background-position: center 20%;
+  clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%);
+  z-index: 1; filter: grayscale(20%) contrast(1.2);
 }
-.prog-track {
-  flex: 1; height: 16px; background: var(--p5-grey);
-  border: 2px solid var(--p5-black);
+.chap-banner-content {
+  position: relative; z-index: 2; display: flex; flex-direction: column;
 }
-.prog-fill {
-  height: 100%; background: var(--p5-red);
-  transition: width 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+.chap-icon{
+  font-family: var(--font-bold); font-size: 20px; color: var(--p3-accent); letter-spacing: .2em;
 }
-.prog-count {
-  font-family: var(--font-display); font-size: 24px;
-  color: var(--p5-red); font-style: italic;
+.chap-name{
+  font-family:var(--font-body); font-weight: 900; font-size:36px; letter-spacing:.1em;
+  color:var(--p3-dark); text-transform:uppercase; line-height: 1;
 }
 
-/* ═══ QUESTIONS ═════════════════════════════════════ */
-.chapter-divider {
-  background: var(--p5-black);
-  color: var(--p5-white);
-  display: inline-block;
-  padding: 8px 24px;
-  font-family: var(--font-display); font-size: 24px;
-  transform: skewX(-15deg);
-  border-left: 8px solid var(--p5-red);
-  margin: 40px 0 20px;
+/* ═══ QUESTION CARD (SHARP & HIGH CONTRAST) ═════════════════════════════════ */
+.q-card{
+  background: var(--p3-dark); border: 2px solid var(--p3-cyan);
+  margin-bottom: 40px; position:relative; padding: 40px;
+  transform: skewX(-5deg); transition: transform .2s, box-shadow .2s;
+  opacity:0; animation: fade-up .5s ease-out both;
 }
-.chap-name { transform: skewX(15deg); font-style: italic; }
+.q-card:focus-within, .q-card:hover { 
+  transform: skewX(-5deg) translate(-4px, -4px);
+  box-shadow: 8px 8px 0 var(--p3-cyan);
+}
 
-.q-card {
-  background: var(--p5-white);
-  border: 4px solid var(--p5-black);
-  margin-bottom: 24px;
-  position: relative;
-  box-shadow: 6px 6px 0 rgba(0,0,0,0.5);
-  transition: transform 0.2s;
-  clip-path: polygon(0 0, 100% 0, 100% calc(100% - 20px), calc(100% - 20px) 100%, 0 100%);
+/* 左上角大编号标签 */
+.q-num-badge {
+  position: absolute; top: -24px; left: -16px;
+  background: var(--p3-accent); color: var(--p3-white);
+  font-family: var(--font-display); font-size: 48px; line-height: 1;
+  padding: 4px 16px 0; box-shadow: -4px 4px 0 var(--p3-dark);
+  z-index: 3;
 }
-.q-card:hover { transform: translateX(5px) translateY(-5px); box-shadow: 10px 10px 0 var(--p5-red); }
-.q-inner { padding: 30px; position: relative; z-index: 2; }
+.q-chapter-badge{
+  position: absolute; top: 12px; right: 12px;
+  background: var(--p3-white); color: var(--p3-dark);
+  font-size:12px; font-family: var(--font-body); font-weight: 900;
+  padding: 4px 12px; letter-spacing: .1em;
+}
 
-.q-meta { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-.q-num {
-  font-family: var(--font-display); font-size: 60px;
-  color: var(--p5-red); line-height: 0.8; font-style: italic;
-  text-shadow: 3px 3px 0 var(--p5-black);
-}
-.q-text {
-  font-size: 18px; font-weight: 700;
-  color: var(--p5-black); margin-bottom: 24px; line-height: 1.6;
+.q-text{
+  font-family:var(--font-body); font-weight: 700; font-size:18px; line-height:1.7;
+  color:var(--p3-white); margin-bottom:30px; margin-top: 10px;
+  transform: skewX(5deg); /* 反向倾斜抵消外部变形，保证文字易读 */
 }
 
 /* ═══ OPTIONS ════════════════════════════════════════ */
-.options { display: flex; flex-direction: column; gap: 12px; }
-.opt {
-  display: flex; align-items: stretch;
-  background: var(--p5-dark); cursor: pointer;
-  border: 3px solid var(--p5-black);
-  transform: skewX(-3deg);
-  transition: all 0.1s;
+.options{display:flex; flex-direction:column; gap:12px; transform: skewX(5deg);}
+
+.opt{
+  display:flex; align-items:center; background: transparent;
+  border: 2px solid rgba(0, 229, 255, 0.3);
+  cursor:none; position:relative; overflow:hidden; transition:all .15s;
 }
-.opt input[type=radio] { display: none; }
-.opt-key {
-  width: 50px; background: var(--p5-black);
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--font-display); font-size: 24px;
-  color: var(--p5-white); font-style: italic;
-  transition: all 0.2s;
+.opt-key{
+  width: 50px; height: 50px; flex-shrink:0;
+  background: rgba(0, 229, 255, 0.1); border-right: 2px solid rgba(0, 229, 255, 0.3);
+  display:flex; align-items:center; justify-content:center;
+  font-family:var(--font-display); font-size:28px; color:var(--p3-cyan);
+  transition:all .15s;
 }
-.opt-text {
-  padding: 12px 16px; font-size: 16px; font-weight: 700;
-  color: var(--p5-white); flex: 1; transform: skewX(3deg);
+.opt-text{
+  padding: 12px 20px; font-size:15px; font-weight: 700;
+  color:var(--p3-white); transition:color .15s; flex:1;
 }
 
-.opt:hover { background: var(--p5-red); transform: skewX(-3deg) scale(1.02); margin-left: 10px; }
-.opt:hover .opt-key { background: var(--p5-white); color: var(--p5-red); }
+/* HOVER & SELECTED */
+.opt:hover{ background: var(--p3-cyan); border-color: var(--p3-cyan); transform: translateX(8px); }
+.opt:hover .opt-key{ background: var(--p3-white); color: var(--p3-dark); border-color: var(--p3-white); }
+.opt:hover .opt-text{ color: var(--p3-dark); }
 
-/* SELECTED */
-.opt.selected { background: var(--p5-red); border-color: var(--p5-white); transform: skewX(-3deg) scale(1.02); margin-left: 10px; }
-.opt.selected .opt-key { background: var(--p5-white); color: var(--p5-red); }
+.opt.selected{ background: var(--p3-cyan); border-color: var(--p3-cyan); }
+.opt.selected .opt-key{ background: var(--p3-white); color: var(--p3-dark); border-color: var(--p3-white); }
+.opt.selected .opt-text{ color: var(--p3-dark); font-weight: 900; }
 
-/* ANSWER STATES */
-.opts.done .opt { pointer-events: none; }
-.opt.correct-ans { background: var(--correct) !important; color: var(--p5-black); }
-.opt.correct-ans .opt-key { background: var(--p5-black) !important; color: var(--correct); }
-.opt.wrong-ans { background: var(--p5-dark) !important; opacity: 0.5; text-decoration: line-through; }
-.opt.reveal-ans { background: var(--correct) !important; border-color: var(--p5-white); }
+/* STATES */
+.opts.done .opt{pointer-events:none}
+.opt.correct-ans{ background: var(--p3-correct) !important; border-color: var(--p3-white) !important; }
+.opt.correct-ans .opt-key{background: var(--p3-white) !important; color: var(--p3-dark) !important}
+.opt.correct-ans .opt-text{color: var(--p3-dark) !important; font-weight: 900;}
 
-.q-note {
-  display: none; margin-top: 20px; padding: 16px;
-  background: var(--p5-black); color: var(--p5-white);
-  border-left: 6px solid var(--p5-red);
-  font-weight: 700; font-size: 14px; transform: skewX(-2deg);
+.opt.wrong-ans{ background: var(--p3-accent) !important; border-color: var(--p3-accent) !important; }
+.opt.wrong-ans .opt-key{background: var(--p3-dark) !important; color: var(--p3-white) !important; border-color: var(--p3-dark) !important;}
+.opt.wrong-ans .opt-text{color: var(--p3-dark) !important; text-decoration:line-through; font-weight: 900;}
+
+.opt.reveal-ans{ border: 2px dashed var(--p3-correct) !important; }
+.opt.reveal-ans .opt-key{color: var(--p3-correct) !important}
+
+.opts.done .opt:not(.correct-ans):not(.wrong-ans):not(.reveal-ans){opacity:.3}
+
+/* ═══ ANALYSIS NOTE ══════════════════════════════════════════ */
+.q-note{
+  display:none; margin-top:24px; padding:20px;
+  background: var(--p3-white); color: var(--p3-dark);
+  font-size:14px; font-weight: 700; line-height:1.7;
+  transform: skewX(5deg); position: relative;
+  border-right: 6px solid var(--p3-cyan);
 }
-.q-note.vis { display: block; animation: slide-up 0.3s forwards; }
-
-/* ═══ SUBMIT ════════════════════════════════════════ */
-.submit-bar {
-  position: fixed; bottom: 0; left: 0; right: 0; padding: 20px;
-  background: rgba(0,0,0,0.9); display: flex; justify-content: center; z-index: 500;
+.q-note::before{
+  content:'ANALYSIS'; font-family:var(--font-display); font-size:24px; line-height: 1;
+  color:var(--p3-accent); display:block; margin-bottom:8px;
 }
-.submit-bar.hidden { display: none; }
-.btn-submit {
-  background: var(--p5-red); color: var(--p5-white);
-  border: 4px solid var(--p5-white); padding: 16px 48px;
-  font-family: var(--font-display); font-size: 28px; font-style: italic;
-  cursor: pointer; transform: skewX(-10deg);
-  transition: all 0.1s;
+.q-note.vis{display:block; animation:fade-up .4s ease both}
+
+/* ═══ SUBMIT BAR ═════════════════════════════════════ */
+.submit-bar{
+  position:fixed; bottom:0; left:0; right:0; padding:24px;
+  background: var(--p3-dark); border-top: 4px solid var(--p3-cyan);
+  display:flex; justify-content:center; z-index:500;
 }
-.btn-submit:not(:disabled):hover {
-  background: var(--p5-white); color: var(--p5-red); border-color: var(--p5-red);
-  transform: skewX(-10deg) scale(1.05);
+.submit-bar.hidden{display:none}
+
+.btn-submit{
+  pointer-events:all; background: var(--p3-white); color: var(--p3-dark);
+  border: none; padding: 16px 60px; font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  transform: skewX(-15deg); cursor:none; transition: all .2s;
+  box-shadow: -6px 6px 0 var(--p3-accent);
 }
-.btn-submit:disabled { background: var(--p5-dark); border-color: var(--p5-grey); color: var(--p5-grey); cursor: not-allowed; }
-
-/* ═══ RESULT ════════════════════════════════════════ */
-#result { display: none; background: var(--p5-white); padding: 40px; border: 6px solid var(--p5-black); box-shadow: 15px 15px 0 var(--p5-red); position: relative; }
-#result.vis { display: block; animation: pop-in 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-
-.result-hero { text-align: center; border-bottom: 6px solid var(--p5-black); padding-bottom: 20px; margin-bottom: 30px; }
-.result-rank-tag { background: var(--p5-black); color: var(--p5-white); display: inline-block; padding: 8px 20px; font-weight: 900; transform: skewX(-10deg); margin-bottom: 20px; }
-.result-title { font-family: var(--font-display); font-size: 60px; color: var(--p5-red); text-transform: uppercase; text-shadow: 4px 4px 0 var(--p5-black); line-height: 1.1; }
-
-.score-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 30px; }
-.score-box { background: var(--p5-black); color: var(--p5-white); padding: 20px; text-align: center; transform: skewX(-5deg); border: 2px solid var(--p5-red); }
-.score-val { font-family: var(--font-display); font-size: 50px; color: var(--p5-red); }
-.score-label { font-weight: 900; font-size: 12px; }
-
-.btn-retry {
-  display: block; width: 100%; background: var(--p5-black); color: var(--p5-white);
-  border: none; padding: 20px; font-family: var(--font-display); font-size: 24px;
-  cursor: pointer; transform: skewX(-5deg); transition: 0.2s;
+.btn-submit:not(:disabled):hover{
+  background: var(--p3-cyan); color: var(--p3-dark);
+  transform: skewX(-15deg) translate(4px, -4px); box-shadow: -10px 10px 0 var(--p3-accent);
 }
-.btn-retry:hover { background: var(--p5-red); }
+.btn-submit:disabled { background: #333; color: #666; box-shadow: none; pointer-events: none;}
 
-@keyframes slide-up { from { opacity: 0; transform: translateY(20px) skewX(-2deg); } to { opacity: 1; transform: skewX(-2deg); } }
-@keyframes pop-in { from { opacity: 0; transform: scale(0.9) skewX(-2deg); } to { opacity: 1; transform: scale(1) skewX(0); } }
+/* ═══ RESULT PANEL (HERO STYLE) ═══════════════════════════════════ */
+#result{display:none; margin-top: 60px;}
+#result.vis{display:block; animation:fade-up .6s ease-out both}
+
+.result-hero{
+  position:relative; padding: 80px 40px; margin-bottom: 40px;
+  background: var(--p3-dark); transform: skewX(-5deg);
+  border: 4px solid var(--p3-cyan);
+  display: flex; align-items: center;
+}
+.result-hero-img {
+  position: absolute; right: 0; top: 0; bottom: 0; width: 60%;
+  background-image: url('EP2.jpg'); background-size: cover; background-position: center;
+  clip-path: polygon(20% 0, 100% 0, 100% 100%, 0 100%);
+  filter: contrast(1.2); opacity: 0.8;
+}
+.result-hero-content { position: relative; z-index: 3; transform: skewX(5deg); width: 60%; }
+
+.result-rank-tag{
+  display:inline-block; background: var(--p3-accent); color: var(--p3-white);
+  font-family:var(--font-bold); font-size:24px; letter-spacing:.1em;
+  padding: 4px 16px; margin-bottom: 16px; line-height: 1;
+}
+.result-title{
+  font-family:var(--font-display); font-size:clamp(60px,10vw,100px); line-height:0.9;
+  color:var(--p3-white); letter-spacing:.02em; text-shadow: -4px 4px 0 var(--p3-cyan);
+}
+.result-desc{
+  font-family:var(--font-body); font-weight: 900; font-size:16px;
+  color:var(--p3-dark); background: var(--p3-white); padding: 8px 16px;
+  display: inline-block; margin-top: 16px;
+}
+
+/* Score grid */
+.score-grid{
+  display:grid; grid-template-columns:repeat(4, 1fr); gap: 16px; margin: 0 0 40px;
+  transform: skewX(-5deg);
+}
+.score-box{
+  background: var(--p3-white); padding: 24px 20px; position:relative;
+  box-shadow: -6px 6px 0 var(--p3-dark);
+}
+.score-val{ font-family:var(--font-display); font-size:72px; line-height:1; display:block; color: var(--p3-dark); }
+.score-box:nth-child(1) .score-val{color: var(--p3-base-blue);}
+.score-box:nth-child(2) .score-val{color: var(--p3-cyan);}
+.score-box:nth-child(3) .score-val{color: var(--p3-accent);}
+.score-label{
+  font-size:18px; color:var(--p3-dark); text-transform:uppercase; margin-top:8px; font-family:var(--font-bold); line-height: 1;
+}
+
+/* Chapter breakdown */
+.breakdown-title{
+  font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  color:var(--p3-cyan); padding: 8px 0; border-bottom: 4px solid var(--p3-white);
+  margin-bottom:24px; transform: skewX(-5deg);
+}
+
+.chap-row{
+  display:flex; align-items:center; gap:16px; padding: 12px 0;
+  border-bottom: 2px solid rgba(255,255,255,0.1); transform: skewX(-5deg);
+}
+.chap-row-name{
+  font-family:var(--font-body); font-weight: 900; font-size:16px; color:var(--p3-white); width:90px;
+}
+.chap-dots{display:flex; gap:8px; flex-wrap:wrap; flex:1}
+.dot{
+  width:36px; height:36px; display:flex; align-items:center; justify-content:center;
+  font-size:18px; font-family: var(--font-display);
+  background: rgba(255,255,255,0.1); color: var(--p3-white);
+  transition:all .2s; cursor:default;
+}
+.dot.c{background: var(--p3-cyan); color: var(--p3-dark); }
+.dot.w{background: var(--p3-accent); color: var(--p3-white); }
+.chap-frac{ font-family:var(--font-display); font-size:32px; color:var(--p3-white); width:60px; text-align:right;}
+
+/* Retry */
+.btn-retry{
+  display:block; margin: 60px auto 0;
+  background: var(--p3-accent); color: var(--p3-white); border: none;
+  padding: 16px 60px; font-family:var(--font-display); font-size:32px; letter-spacing:.05em;
+  transform: skewX(-15deg); cursor:none; transition: all .2s;
+  box-shadow: -6px 6px 0 var(--p3-dark);
+}
+.btn-retry:hover{ transform: skewX(-15deg) translate(4px, -4px); box-shadow: -10px 10px 0 var(--p3-cyan); }
+
+/* ═══ ANIMATIONS ═══════════════════════════════════ */
+@keyframes fade-up{ from{opacity:0; transform:translateY(40px) skewX(-5deg)} to{opacity:1; transform:skewX(-5deg)} }
+@media(max-width:600px){
+  .site-title { font-size: 60px; }
+  .header-hero-img { width: 100%; opacity: 0.3; clip-path: none; right: 0; }
+  .site-header-content { width: 100%; }
+  .score-grid{grid-template-columns:1fr 1fr}
+  .bg-massive-text { font-size: 50vw; }
+}
+
+/* Tooltip */
+.dot[data-t]::after{
+  content:attr(data-t); position:absolute; bottom:45px; left:50%; transform:translateX(-50%) skewX(5deg);
+  background: var(--p3-white); color: var(--p3-dark); font-size:14px; white-space:nowrap;
+  padding:4px 12px; pointer-events:none; opacity:0; transition:opacity .2s; z-index:10;
+  font-family:var(--font-body); font-weight: 900;
+}
+.dot[data-t]:hover::after{opacity:1}
 </style>
 </head>
 <body>
 
-<div class="bg-slash"></div>
+<!-- High Contrast Background Elements -->
+<div class="halftone-bg"></div>
+<div class="bg-massive-text">DONE AND DUSTED</div>
+<div class="bg-massive-text bottom">MASS DESTRUCTION</div>
+
+<!-- Sea of Souls Floating Particles -->
+<div class="sea-particles" id="particles"></div>
+
+<!-- Custom cursor -->
+<div id="cursor"></div>
 
 <div id="app">
+  <!-- HEADER -->
   <header class="site-header">
-    <div class="header-bg-text">TAKE YOUR TIME</div>
-    <div class="header-tag">THE PHANTOM THIEVES OF HEARTS</div>
-    <h1 class="site-title">STAR NIGHT<br>CHALLENGE</h1>
+    <div class="header-hero-img"></div>
+    <div class="site-header-content">
+      <div class="header-tag">PERSONA 3 RELOAD TEST</div>
+      <h1 class="site-title">STAR<br><span>NIGHT</span></h1>
+      <div class="header-rule">星月夜老嗨测试</div>
+    </div>
   </header>
 
+  <!-- PROGRESS -->
   <div class="progress-panel" id="prog-panel">
-    <div class="prog-label">MISSION</div>
-    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="width:0%"></div></div>
-    <div class="prog-count" id="prog-count">0/32</div>
+    <div class="prog-label">ANALYZE</div>
+    <div class="prog-track">
+      <div class="prog-fill" id="prog-fill" style="width:0%"></div>
+    </div>
+    <div class="prog-count" id="prog-count">0<span style="font-size:24px;color:rgba(0,0,0,0.5)">/32</span></div>
   </div>
 
+  <!-- QUESTIONS -->
   <div id="quiz-body"></div>
 
+  <!-- SUBMIT BAR -->
   <div class="submit-bar" id="submit-bar">
-    <button class="btn-submit" id="btn-submit" disabled>CONFIRM ANSWERS</button>
+    <button class="btn-submit" id="btn-submit" disabled>
+      EXECUTE
+    </button>
   </div>
 
+  <!-- RESULT -->
   <div id="result"></div>
 </div>
 
 <script>
-/* JS 数据与底层交互逻辑保持完整 */
+/* ═══ ANIMATIONS & EFFECTS ═══════════════════════════════════════ */
+const particleContainer = document.getElementById('particles');
+for(let i=0; i<20; i++) {
+  const p = document.createElement('div');
+  p.className = 'bubble';
+  p.style.left = `${Math.random() * 100}%`;
+  p.style.width = p.style.height = `${Math.random() * 80 + 30}px`;
+  p.style.animationDelay = `${Math.random() * 10}s`;
+  p.style.animationDuration = `${Math.random() * 10 + 8}s`;
+  particleContainer.appendChild(p);
+}
+
+const cur = document.getElementById('cursor');
+document.addEventListener('mousemove', e => {
+  cur.style.left = e.clientX + 'px';
+  cur.style.top  = e.clientY + 'px';
+});
+document.addEventListener('mouseover', e => {
+  const t = e.target.closest('button, .opt, .dot');
+  cur.classList.toggle('hovered', !!t);
+});
+
+/* ═══ DATA & IMAGE MAPPING ═════════════════════════════════════════ */
+const CHAP_BG = {
+  "玉衡篇": "玉衡(10).jpg",
+  "天璇篇": "天璇11.jpg",
+  "天玑篇": "天玑7.jpg",
+  "天枢篇": "天枢5.jpg",
+  "天权篇": "天权4.jpg",
+  "开阳篇": "开阳9.jpg",
+  "综合": "EP3.jpg"
+};
+
 const QS = [
-  {id:1,ch:"玉衡篇",q:"陈一星在玉衡篇所修炼觉醒的特殊能力名称是？",o:["幻想原子【至微星】","地龙符·蚯蚓之力","灵蛇珠·莉莉之力","雷符·精精召唤"],a:0,n:"一星在玉衡篇终战后觉醒「幻想原子【至微星】」，是他个人战斗力的核心。"},
-  {id:2,ch:"玉衡篇",q:"叶继龙图谋利用什么来实现长生不死？",o:["天动仪的植物能量","龙脉","灵蛇珠的宇宙意识","还魂草"],a:1,n:"叶继龙的野心是操控叶家世代守护的龙脉，以此长生。"},
-  {id:3,ch:"玉衡篇",q:"「爱莉斯」在玉衡篇末尾登场时，她的真实身份是？",o:["陈丰氏族失散的后裔","死亡本身的具现化存在","天动仪的前任核心","叶家的远古守护神"],a:1,n:"爱莉斯是「死亡本身」的具现化，玉衡篇是她在整个北斗七星计划中的首次登场。"},
-  {id:4,ch:"玉衡篇",q:"叶寄真在日常生活方面有什么著名的短板？",o:["极度怕高，无法攀爬","烹饪能力极差，近乎为零","除修行以外的常识基本属于「濒危坏灭状态」","完全不懂怎么与人沟通"],a:2,n:"原文明确描述寄真「把时间都花在修行上面，其他知识基本属于频危坏灭状态」。"},
-  {id:5,ch:"玉衡篇",q:"小翠被解除「家妖束缚」之前，受到哪些限制？",o:["不能在夜间出现，且只能在符咒范围内活动","以叶家为核心，始终受制于家妖契约","行动范围限于叶家宅院，且需随传随到","必须以老妇形态示人，不能展示真实外貌"],a:1,n:"小翠是叶家的家妖，受家妖契约束缚，需遵从叶家的命令。一星劝说寄真解除了这个枷锁。"},
-  {id:6,ch:"玉衡篇",q:"一星以什么代价换取「叶家弟子」身份，免除被夺走记忆的危险？",o:["永久封印自己的魔力核","贡献一部分「力」给灵蛇珠","成为叶寄真的弟子，以此进入叶家体系","每月向叶家缴纳等量的灵力资源"],a:2,n:"一星以「成为叶寄真弟子」为代价，让叶家承认他的合法性，避免记忆被清除。"},
-  {id:7,ch:"天璇篇",q:"「莉莉」的真实身份是什么？",o:["人类灵魂转化而来的精灵","宇宙意识体「利维坦」的一个意识碎片","陈丰氏族失落的第七系力量","何罗鱼族裔的觉醒者"],a:1,n:"莉莉是宇宙级意识体「利维坦」的碎片，以刘莉香的身体为宿主。"},
-  {id:8,ch:"天璇篇",q:"天璇篇B线（悲剧线）中，一星进入利维坦意识空间后做了什么选择？",o:["强制唤醒莉莉，导致利维坦全面觉醒","选择不强制唤醒莉莉，代价是寿命缩短至三年","与莉莉签订永久契约，被困在意识空间内","摧毁利维坦的意识核，令莉莉彻底消失"],a:1,n:"B线中一星选择不强迫莉莉，代价是寿命被压缩至三年。雨夜独行，失去最重要的东西。"},
-  {id:9,ch:"天璇篇",q:"刘莉香通过灵蛇珠获得了什么额外能力？",o:["可以预知他人的死亡时刻","身体的物理能力被强化，且细胞活性增加、延缓衰老","可以自由穿行于不同平行世界","能感知他人的情感「旋律」"],a:1,n:"莉莉告诉莉香：附体时会增加细胞活性，延缓衰老——一星故意用这个理由说服爱美的莉香。"},
-  {id:10,ch:"天璇篇",q:"天璇篇反派「鲁滨逊·冯·瓦特」与利维坦之间的矛盾根源是什么？",o:["鲁滨逊试图摧毁利维坦以独占其宇宙能量","鲁滨逊误解了利维坦的意图，双方陷入不必要的对立","利维坦曾毁灭了鲁滨逊的家族","两者争夺同一条龙脉的控制权"],a:1,n:"鲁滨逊是因误解利维坦的意图而成为反派——他并非出于纯粹的邪恶，而是信息不对等导致的悲剧。"},
-  {id:11,ch:"天璇篇",q:"天璇篇共有多少章？",o:["15章","18章","20章","24章"],a:2,n:"天璇篇共二十章，是六篇中章节最多的之一。"},
-  {id:12,ch:"天玑篇",q:"唐雨诗拥有的特殊能力名称是什么？",o:["幻想原子·破律","拉赫西斯破律能力","芯片杀（Chip Breaker）","地龙符·种子之力"],a:1,n:"唐雨诗天生拥有「拉赫西斯破律能力」——来自命运三女神中负责「分配寿命」之神的破坏性异能。"},
-  {id:13,ch:"天玑篇",q:"天玑篇中，「爱莉丝」单人突击了哪个地方，且以完胜收场？",o:["飞来峰天动仪本体","黑月研究所","利维坦意识空间的边界","叶继龙的龙脉要塞"],a:1,n:"爱莉丝单人强攻黑月研究所，完胜。是天玑篇最高潮的场面之一。"},
-  {id:14,ch:"天玑篇",q:"天玑篇的正线结局是以什么场面收束的？",o:["唐雨诗与一星在月下握手","雨诗在雨中独自远去","机场的完满结局","两人在夜市街头分道扬镳"],a:2,n:"天玑篇正线的结局是机场完满结局，与天璇B线的「雨夜独行」形成鲜明对比。"},
-  {id:15,ch:"天玑篇",q:"prologe03中，小翠对慕容兰「摸坏电器」能力的判断是？",o:["后代将彻底丧失任何超自然潜力","这种特性可能遗传，子女有可能觉醒真正的魔力核","这只是普通的静电体质，与异能无关","后代将成为天生的修道师"],a:1,n:"小翠明确说：「这种特性可能遗传到你的后代，你的子女说不好会拥有魔力核。」"},
-  {id:16,ch:"天玑篇",q:"prologe03结尾，「阿九」与「阿帕」对一星的最终指令是什么？",o:["立即生擒目标","进入捕猎模式，暗中行刺","因证据不足，暂时进入监视模式","向上级申请清除许可"],a:2,n:"阿帕表示没有明确证据前不好出手，指令改为「主要目的为证据收集，进入监视模式」。"},
-  {id:17,ch:"天枢篇",q:"天动仪的「第三条规则」是什么？",o:["维持飞来峰的永续飞行","保护陈丰氏族的血脉延续","对背人伦者施以灭亡","以七名血脉者的心为燃料"],a:2,n:"天动仪三条规则：①维持自身运作存活；②维持内部环境均衡；③对背人伦者施以灭亡。第三条是老爷子以仇怨刻入的绝对命令。"},
-  {id:18,ch:"天枢篇",q:"「菲儿」的真实身份是什么？",o:["思薇三百年前收养的孤儿转化的灵体","天动仪的核心意识，三百年前已死去的孩子人格","陈丰氏族第七代家主的残留意识","飞来峰结界自动生成的人形守护者"],a:1,n:"菲儿三百年前已死，他的意识作为核心存放于天动仪之中。菲儿即天动仪，天动仪即菲儿。"},
-  {id:19,ch:"天枢篇",q:"一辉推理指出「另一个菲儿」的关键矛盾是什么？",o:["菲儿在多起案件中同时出现在两个地点","凶手制造密室时选了「拆窗」这个多余步骤，但下人房根本没有窗户——两重人格的信息差暴露了双重人格的存在","菲儿的鞋底留有与案发现场相同的特殊泥土","菲儿被追问时说出了只有凶手才知道的细节"],a:1,n:"密室手法选择了「拆窗」，但另一人格不知道下人房没有窗，才在不必要的地方布置了「密室」——这个信息差暴露了双重人格的存在。"},
-  {id:20,ch:"天枢篇",q:"一星说服思薇的最关键论据——「一芳与陈家没有血缘关系」，具体原因是什么？",o:["一芳是被思薇秘密调换的普通孤儿","一芳的母亲出轨后生下她，户籍上的父亲才有陈家血缘，她本人则没有","一芳的陈家血脉在三代前已被秘密剥夺","一芳其实是叶家远亲而非陈家后人"],a:1,n:"一星凭此论据点破：天动仪需要七名有血缘者，但其中一人实际无血缘，仪式从一开始就注定无法完成。"},
-  {id:21,ch:"天枢篇",q:"菲儿在告别时引用了《诗经》中的哪句诗？",o:["关关雎鸠，在河之洲","昔我往矣，杨柳依依，今我来思，雨雪霏霏","青青子衿，悠悠我心","蒹葭苍苍，白露为霜"],a:1,n:"菲儿选择「长眠」时，转身说：「昔我往矣，杨柳依依，今我来思，雨雪霏霏——一星哥，千万不要忘记菲儿哦。」"},
-  {id:22,ch:"天枢篇",q:"叶风在深渊底部领悟地龙符之力时，对「真正的强大」的回答包含以下哪个比喻？",o:["「大海比巨浪更强大，因为它包容一切」","「磨刀石比锋利的剑刃更强大，因为它能研磨出锋利」","「静水比急流更强大，因为它能反映天地」","「根比枝更强大，因为一切生命从此延伸」"],a:1,n:"叶风的回答：磨刀石比剑刃强大、水滴比岩石强大、种子比坚硬土地强大——真正的强大是执着与坚持。"},
-  {id:23,ch:"天权篇",q:"天权篇女主「吕清音」有什么特殊的说话方式？",o:["只能以数学公式表达情感","只能引用古典汉语诗文来表达自己的意思","说话时只能使用单音节词","只能通过书面文字与他人沟通"],a:1,n:"吕清音在图书馆古籍书库首次登场，始终以古文诗句作答，令一星和梦海大感困惑。"},
-  {id:24,ch:"天权篇",q:"吕清音初次帮一星解围时，说的是哪句古文？",o:["「非唯自乐，又能乐时。」","「梦见先君，飨而后馈。」","「亢龙有悔，知进退存亡。」","「昔我往矣，杨柳依依。」"],a:1,n:"「梦见先君，飨而后馈」典出颜回护粥的故事，意指「所见并非你以为的那样」——暗示三人的判断有误。"},
-  {id:25,ch:"天权篇",q:"天权篇终战中「亢龙有悔」与哪个设定高度呼应？",o:["凶手反复三次使用此成语作为暗号","一星三度以「亢龙有悔」令对手认识到过刚则折的道理，以此决出胜负","吕清音以此句封印了反派的意识","此成语是开启古老封印的密钥"],a:1,n:"「亢龙有悔」出自《易经》，意指「盛极必衰，知止为智」。天权篇以三读此句决定终战走向，与吕清音的说话方式高度呼应。"},
-  {id:26,ch:"天权篇",q:"思薇在prologe03中透露陈丰六个从族中有「不是人类」的一支，小翠的反应是？",o:["哈哈大笑，认为这是无稽之谈","少见地皱起眉头，一反常态地认真起来","立刻表示自己早已知晓此事","追问这支「非人类」是否与利维坦有关联"],a:1,n:"小翠平时总是笑嘻嘻，思薇说出「那个从族，不是人类」后，小翠「少见地皱起了眉头」，显示这个消息确实令她感到意外。"},
-  {id:27,ch:"开阳篇",q:"开阳篇的女主「桃蕊丝」是什么种族？",o:["何罗鱼","狐妖","狼人（亚人）","半龙"],a:2,n:"桃蕊丝是狼人（亚人），天枢篇中思薇曾在十余年前遇见幼年的她（称为「小桃」），感知到心中「混杂野性、血腥和杀戮的不祥旋律」，判断「这个孩子不是人类」。"},
-  {id:28,ch:"开阳篇",q:"开阳篇最终反派「安琪儿」的真实身份是什么？",o:["堕落的天使","羽蛇（Quetzalcoatl）","从人类进化而来的异能觉醒者","利维坦的另一意识碎片"],a:1,n:"安琪儿的真实身份是羽蛇（羽蛇神Quetzalcoatl），是开阳篇的主要反派。"},
-  {id:29,ch:"开阳篇",q:"开阳篇中重要的非人类角色「阿巴东」，他的身份是？",o:["何罗鱼族长","恶魔","古代修道师的遗体傀儡","龙脉的守护者"],a:1,n:"阿巴东是恶魔，开阳篇重要的非人类角色，与安琪儿（羽蛇）一起构成了故事的超自然核心。"},
-  {id:30,ch:"开阳篇",q:"开阳篇终战的胜利方式是通过什么实现的？",o:["以幻想原子·至微星将安琪儿封印于龙脉之中","以契约执行击败安琪儿","桃蕊丝觉醒狼人完全体将其压制","利用阿巴东的恶魔之力反噬安琪儿"],a:1,n:"开阳篇终战以契约执行的方式击败安琪儿，是整个六章中最具「谈判与约定」精神的终结方式。"},
-  {id:31,ch:"综合",q:"整个「北斗七星计划」共六篇，其中哪两篇属于EP1（最初两个平行世界）？",o:["天权篇·开阳篇","玉衡篇·天璇篇","天玑篇·天枢篇","玉衡篇·天玑篇"],a:1,n:"EP1=玉衡（女主叶寄真）+天璇（女主刘莉香）；EP2=天玑+天枢；EP3=天权+开阳。"},
-  {id:32,ch:"开阳篇",q:"开阳篇结局中，桃蕊丝向一星表达心意时说的是什么？",o:["「我要一直跟着少爷，直到永远。」","「我想当你的新娘！」","「下一次轮回，我还是会找到你的。」","「答应我，无论在哪个平行世界都要记住我。」"],a:1,n:"开阳篇的结局：桃蕊丝表白说「我想当你的新娘！」，是全六篇中最直接、最豪爽的告白。"},
+  {id:1,ch:"玉衡篇",q:"陈一星名字的来历——老爸究竟犯了什么错？",o:["原典写的是「天枢一星」，老爸漏掉了「天枢」两字","原典写的是「勾陈一」，因为没打标点，老爸误读断句，把「陈」接到后面成了「陈一星」","老爸把「北极勾陈大帝」中的「陈」字拿来当姓，随意配了「一星」","原典里根本没有对应的星名，是老爸看错了书名，把书名当成星名了"],a:1,n:"原文是「勾陈一」——那才是那颗星的名字。老爸因为原文没有标点，误把「陈」断给了后面，读成「（勾）陈一星」。一星查字典查了两个小时才发现这个悲剧。"},
+  {id:2,ch:"玉衡篇",q:"prologe01序章中，宿舍长赵书诚著名的「皱巴巴事件」是怎么回事？",o:["书诚的一件灰色内裤从衣架掉落，被误当成抹布踢到床下，停电夜被岳山用扫把勾出来，发着荧光还在蠕动","书诚的一双臭袜子被梦海偷偷塞进空调出风口，夏天一开机全宿舍人都冲出门","书诚的毛巾落入下水道，腐烂后堵塞管道，被工人当场在全宿舍面前捞出来","书诚的考试笔记被雨水泡烂后贴在窗台晾晒，路过的班长误以为是宿舍规定的违禁物"],a:0,n:"那件灰色内裤上绣着「诚」字，从衣架掉落后被当作抹布踢到床底，停电夜里它「发着荧光还在慢慢蠕动」，三人当场省了一天的饭。从此成为「宿舍七不思议」之一。"},
+  {id:3,ch:"玉衡篇",q:"prologe01中，一星在天桥上遇见刘莉香（「莉莉」人格）。她第一句话是向一星问什么？",o:["「你叫什么名字？」随即让他猜她的名字","「我叫莉莉！」紧接着问：「雌雄交合的事情，要做吗？」","「这里是什么地方？」然后补充说自己完全不记得怎么到这里的","「你相信世界上有鬼魂吗？」然后问他愿不愿意帮她"],a:1,n:"莉莉先自我介绍「我叫莉莉！」，随即用正经的生物学语气问「雌雄交合的事情，要做吗？」，令一星大脑发生「大雪崩」，堪称全序章最石破天惊的开场白。"},
+  {id:4,ch:"玉衡篇",q:"210宿舍的四人中，余梦海有一项让人叹为观止的纪录，是什么？",o:["四年从未缺勤一次上课，但每次坐进教室就立刻睡着","重修记录为零，却完全无视一切上课和考试，原文形容他是「神仙等级」","格斗游戏连胜纪录保持者，据说曾在校内公开赛以0失血打遍全校","从不参加社团却担任了三个社团的顾问，全靠线上指导"],a:1,n:"「重修记录是0」——这家伙可以完全无视任何上课和考试，却从未挂科。一星称之为「神仙等级」，对比自己还得偶尔去自修备考，实在令人汗颜。"},
+  {id:5,ch:"玉衡篇",q:"一星第一次见到刘岳山邀他跑步时，心里是怎么想的？",o:["「难得有人邀我运动，这家伙其实是在关心我的身体吧」，颇为感动地答应了","「这家伙说找我是因为无聊，其实是想说整天面对电脑对身体不好——真是个无比笨拙的家伙」","「岳山的体能是宿舍第一，跟他跑一定会累个半死，但推辞会显得太没用」","「下次借口头疼推掉，这次先答应再说」，打算应付一下就回来"],a:1,n:"一星看穿了岳山说「一个人太无聊」的真实意图——是在委婉地说「你整天打游戏对身体不好」。原文说他是「无比笨拙的家伙」，一星和梦海私下约定：这家伙的邀请不能拒绝。"},
+  {id:6,ch:"玉衡篇",q:"一星用「逆转推理」逼退刘莉香的时候，他提出的指控是什么？",o:["指控她是在天桥上色诱男性、再拖到偏僻处施暴的连续伤人犯，并声称受害者都是被腿法踢伤的","指控她是研究所派来监视叶家的卧底，并表示手里有证据","指控她是失踪学生名单上的人，可以联系警方核实身份","指控她用什么药把自己迷晕再带到旅馆，是专门诈骗男生的惯犯"],a:0,n:"一星指出「连续男性重伤事件——犯人就是你」，并分析腿法是专家级别、受害者都是被踢伤的，击中要害。莉香色厉内荏，随即崩溃大哭，一星成功逆转，虽然全是胡说八道。"},
+  {id:7,ch:"天璇篇",q:"莉莉（利维坦意识碎片）最初在天桥上向一星提问「雌雄交合的事情，要做吗」，她的真实目的是什么？",o:["这是利维坦测试宿主身体是否完全觉醒的仪式性提问，与男女无关","莉莉的意识刚从沉睡中苏醒，对人类社会一无所知，只是在字面意义上「学习」人类繁殖行为","她在用这个问题筛选愿意配合她完成「力量转移」的候选人","这是利维坦传递给莉莉的指令——必须在人间找到一个契约对象"],a:1,n:"莉莉是刚苏醒的宇宙意识碎片，对人间一无所知，只是最直接地想「学习」人类行为。她问完之后还用生物学术语解释「雄性排出Y染色体与雌性的X染色体结合」，令一星确信这不是普通人。"},
+  {id:8,ch:"天璇篇",q:"灵蛇珠对莉香「延缓衰老」的说辞，是一星如何设计出来的？",o:["一星直接让莉莉按真实情况说明，莉香在听说能抗衰老后自愿接受","一星私下叮嘱莉莉：不要提「强化体力」，改说副作用是「增加细胞活性、延缓皮肤衰老」——莉香爱美，这招必中","小翠主动设计了这个说辞，一星只是在旁边配合演戏","其实是叶寄真的主意，她认为如实相告莉香会拒绝，所以让一星转达美化版本"],a:1,n:"一星自己设计的：「强化身体莉香绝对不肯，所以让莉莉说副作用是延缓衰老」。小翠事后大笑说「我果然没有看错人」，这段是prologe02的重要细节。"},
+  {id:9,ch:"天璇篇",q:"天璇篇A线结局的核心场景是什么？",o:["一星和莉香在利维坦意识空间内握手，莉莉宣布永久封印自己","雨夜，一星独自行走，失去了最重要的东西","莉香与莉莉月下握手，以莉香为主体与莉莉正式共存","一星站在天桥上，等到了重新归来的莉香"],a:2,n:"A线（好结局）是莉香与莉莉月下握手，两者达成和解，以莉香为主体正式共存。B线（悲剧线）才是「雨夜独行、寿命缩至三年」。两条线的差异是本作最重要的分歧之一。"},
+  {id:10,ch:"天璇篇",q:"prologe01中，给一星符咒的神秘老婆婆如何判断一星被「女鬼」缠身？",o:["她看见一星肩上有黑色气场环绕，能用道眼直接看见附体的莉莉","她看见一星「印堂发黑，双目无光」，判断被反复无常的女鬼缠上了","她嗅到一星身上有奇异的灵气残留，不像是人类的气息","她看见一星右手虎口有淡紫色印记，是被异界存在接触过的证明"],a:1,n:"老婆婆的原话：「你现在印堂发黑，双目无光，应该被奇怪的女鬼缠上了。仿佛还是个反复无常的女鬼呢。」随后她消失不见，一星被打肿的脸也神奇痊愈了。"},
+  {id:11,ch:"天璇篇",q:"prologe02中，伍思薇来访宿舍时自我介绍的第一句话，以及她为何而来？",o:["「我是思薇，负责管理陈家财产的人。陈家老太爷留下遗嘱，想请少爷去核实一件事。」","「我是思薇，是陈家本家的丫环。在少爷很小的时候，我们曾经见过一面呢。陈家大老爷去世了，想请子孙送最后一程。」","「我是思薇，代替老爷子传话。老爷子的遗愿是把家产留给陈家嫡系，请少爷前去认领。」","「我是思薇，叶家的联络人。奉修道师叶寄真之命，前来通知少爷有关陈家的紧急事项。」"],a:1,n:"思薇的原话：「我是思薇，是陈家本家的丫环。在少爷很小的时候，我们曾经见过一面呢。」随即带来老太爷去世的消息，并说明想请陈家子孙送最后一程，遗产也将在事后分发。"},
+  {id:12,ch:"天玑篇",q:"「拉赫西斯破律能力」中「拉赫西斯」出自哪里？它本来负责什么？",o:["出自北欧神话命运三女神，拉赫西斯是其中负责「剪断生命之线」的女神","出自希腊神话命运三女神（摩伊賴），拉赫西斯是其中负责「分配寿命长短」的女神","出自埃及神话，拉赫西斯是负责「审判亡魂」的天平守护者","出自《旧约》传说中的天使系列，拉赫西斯是掌管「时间逆流」的末位天使"],a:1,n:"摩伊賴三女神：克洛托（纺织命运之线）、拉赫西斯（分配每人的寿命长短）、阿特罗波斯（剪断生命之线）。唐雨诗的能力以「分配寿命」之神命名，暗示她能干涉命运的计量。"},
+  {id:13,ch:"天玑篇",q:"prologe03中，慕容兰「芯片杀（Chip Breaker）」能力有一个重要限制，是什么？",o:["只在满月时才能触发，平时接触精密电器没有任何反应","越是精密的电器越容易坏，普通电灯无所谓，但手机、手提电脑等精密设备一碰就损坏","必须情绪激动才能触发，平静状态下的触碰不会破坏电器","只对插电状态的电器有效，断电情况下的电器不受影响"],a:1,n:"小兰说：「似乎和精密程度有关，越是精密的电器就越容易坏掉。手机啦，手提电脑啦……」电灯无所谓，越精密越危险。这也是她从不买手机、上机作业都找梦海代劳的原因。"},
+  {id:14,ch:"天玑篇",q:"prologe03中，唐老板（唐雨诗的养父）破墙而入之后，为什么又若无其事地说了一句「啊，没事就好」？",o:["他发现一星并没有对雨诗做任何非分的事情，于是满意地收手","他以为雨诗在哭，破墙进来，雨诗说「我没有哭啦」，他立刻解除警戒","他发现现场所有人都安全，认为是自己的气势镇住了现场","阿齐在他耳边小声说明了情况，他这才反应过来是误会"],a:1,n:"唐老板听到「雨诗眼含泪水」的误报就砸破墙冲进来，结果雨诗说「我没有哭啦！爸！」，他立刻若无其事说「啊，没事就好。爸爸一直在你身边的哦。」——这段反差喜剧是天玑篇序章的名场面。"},
+  {id:15,ch:"天玑篇",q:"prologe03中，阿帕向阿九列举了一星引起高层重视的几项证据，以下哪项不在阿帕的报告里？",o:["一星在两个月内成为修道师叶家的弟子","一星曾与「利维坦」（七幻生之一）接触并全身而退","一星亲手觉醒了一名女神类型异能者并将其编入叶家","一星曾独自潜入研究所内部窃取机密档案"],a:3,n:"阿帕的报告里提到：成为叶家弟子、与利维坦接触全身而退、发掘女神类型异能者编入叶家、叶家与研究所谈判、某城池级大型魔法器具短期活动。从未提到「潜入研究所窃取档案」。"},
+  {id:16,ch:"天玑篇",q:"prologe03中，阿帕对阿九说「你太天真了」，是因为阿九说了什么？",o:["「就算他跟利维坦接触过，只要没有实质伤害就不构成威胁」","「他只是叶家弟子，这些家系毕竟也得有弟子才能延续，凭这一点说明不了什么」","「修道师受不少人保护，动手风险太高，不如先等他犯错再出手」","「那个城池级魔法器具的活动也许只是自然波动，未必和他有关」"],a:1,n:"阿九说「这些家系毕竟也得有弟子才能延续下去」，认为单凭「成为叶家弟子」不能说明什么。阿帕才补充了「与利维坦接触全身而退」「发掘女神类型异能者」等更具分量的证据，让阿九无话可说。"},
+  {id:17,ch:"天枢篇",q:"天动仪的三条规则按顺序是什么？",o:["①对背人伦者施以灭亡；②维持内部环境均衡；③维持自身运作存活","①维持飞来峰的飞行轨道；②保护陈丰血脉；③消灭一切外来入侵者","①维持自身运作存活；②维持内部环境均衡；③对背人伦者施以灭亡","①封印飞来峰以外的所有通道；②记录陈丰氏族的历史；③必要时以人为燃料"],a:2,n:"顺序很重要：①维持自身运作存活——②维持内部环境均衡——③对背人伦者施以灭亡。第三条是老爷子以仇怨刻入的绝对命令，也是整起杀人事件的根源。"},
+  {id:18,ch:"天枢篇",q:"天枢篇中，一红是以什么名义混入飞来峰的？她的真实目的是什么？",o:["以思薇远房亲戚的名义混入，目的是调查思薇是否与十二年前某宗神秘失踪案有关","与表哥一发假扮兄妹混入，目的是追查十二年前祖父被召上山后失踪的真相","以考古研究者的名义混入，目的是寻找陈丰氏族遗留的宝藏","以记者身份混入，目的是揭露飞来峰上曾经发生的古老谋杀案"],a:1,n:"一红在第12章揭发：她见过十二年前的思薇，祖父被召集上山后失踪。她与表哥一发假扮兄妹，以陈家子孙身份混入，只为查出真相。"},
+  {id:19,ch:"天枢篇",q:"菲儿的两重人格中，「另一个菲儿」在布置第几起案件的密室时，因为信息差暴露了自己？",o:["第一起案件，密室用了拆窗手法，但目标房间根本就没有窗户","第三起案件，密室用了拆窗手法，但下人房根本就没有窗户","第五起案件，密室用了细线机关，但另一人格忘记房间门是向内开的","第六起案件，密室用了冰块门栓，但目标房间用的是拉门而非推门"],a:1,n:"一辉推理的核心：第三案现场的密室，凶手选择了「拆窗」这个手法，但下人房根本没有窗户——这个信息差只有对房间构造认知不同的「另一个人格」才会犯。"},
+  {id:20,ch:"天枢篇",q:"第12章天动仪自称是什么？它向谁下达了任务指令，使用什么称号称呼对方？",o:["自称「飞来峰的灵魂」，向一星（称为「甲子号」）下达了「保护血脉继承人」的指令","自称「管理飞来峰的系统」，宣布应急系统启动，向思薇（称其编号为「乙丑」）下达任务","自称「陈丰氏族的守护者」，向菲儿（称为「核心意识体」）确认了灭亡令的执行状态","自称「北斗第一轴心」，同时向所有在场者宣布启动「终极净化程序」"],a:1,n:"天动仪自称「管理飞来峰的系统」，宣布应急系统启动，向思薇以编号「乙丑」下达任务。这是天动仪在全篇中首次以系统身份正式现身，也是思薇与天动仪关系的关键揭示时刻。"},
+  {id:21,ch:"天枢篇",q:"一辉为了引开凶手保护其他人，用了什么具体手法？最后他的牺牲体现在哪里？",o:["故意独自留守密室，引凶手前来，以自身作为诱饵，被刺伤右臂后触发「阵」字绿光封住凶手","和另一人换了房间和外套，让凶手错杀了自己；右臂浮现「阵」字绿光，藤蔓将他封茧；留下遗书拜托一星寄金条给母亲","主动承认自己是凶手以保护菲儿，被众人关押后趁乱换人逃跑，却在冰窖里中毒身亡","拿着思薇的佩玉冲向天动仪本体，用「孤注一掷，气贯长虹」的力量同归于尽"],a:1,n:"一辉的牺牲三要素：①与他人换房间换外套→凶手错杀了他；②右臂「阵」字绿光→藤蔓将他封茧；③留下遗书拜托一星「寄金条给母亲」。这是全篇最令人落泪的场面之一。"},
+  {id:22,ch:"天枢篇",q:"思薇讲述的「十二年前与幼年一星见面」的细节中，哪一处是关键的跨篇联动？",o:["幼年一星胸前挂着七颗黄玉，这是陈丰氏族血脉认证的信物","幼年一星承诺「等我长大一定去帮姐姐」，与他同行的「小桃」就是桃蕊丝（开阳篇女主）","思薇认出了幼年一星的「勾陈一星」本命，预言他将是天动仪危机的解决者","幼年一星当时正由叶寄真陪同，是叶家接触陈家的第一次正式往来"],a:1,n:"思薇回忆：幼年一星（胸前七颗黄玉）承诺「等我长大一定去帮姐姐」，与他同行的「小桃」被思薇感知到「混杂野性、血腥和杀戮的不祥旋律」——那正是开阳篇女主桃蕊丝，此为跨篇联动。"},
+  {id:23,ch:"天权篇",q:"一星第一次见到吕清音时，她做了什么让他「气得差点没晕倒」？",o:["她直接把一星和梦海递进去的查询字条扔进废纸篓，一个字都没看","一星问她能不能进书库找书，她沉默片刻，举手指向「本书库不对外开放」的牌子","她把一星要借的书放在柜台上，却要求他用古文才能把书拿走","她先点头示意可以，等一星走进书库，又追出来用手势把他轰出去"],a:1,n:"一星问能不能进去找书，吕清音「缓缓举起手指，缓慢得四周的时间仿佛停顿了一样」，手指终点是那块小牌子：「本书库不对外开放」。一星气得差点晕倒，感慨「你说一句不就好了嘛」。"},
+  {id:24,ch:"天权篇",q:"吕清音在书库第一次开口说话，对一星说的是什么——她是如何回应他要找书的请求的？",o:["「诗三百，一言以蔽之，曰：思无邪。」（暗示一星的来意不纯）","「非唯自乐，又能乐时。」（出自《伊川击壤集》，这正是一星要找的书的内容）","「梦见先君，飨而后馈。」（典出颜回护粥故事）","「学而时习之，不亦说乎？」（在嘲讽一星从不认真上课）"],a:1,n:"一星请她找「叫伊川什么什么的书」，她不假思索说了「非唯自乐，又能乐时」——那正是邵雍《伊川击壤集》中的句子。一星一头雾水说「那就给我这本吧」，她随即取出了那本线装书。"},
+  {id:25,ch:"天权篇",q:"吕清音第二次开口说话是在帮一星解围的时候，三个壮汉逼问，她说了哪句古文？那句话实际上是什么意思？",o:["「亢龙有悔，盈不可久也。」——意为「你们强横过头，会有报应」，在威胁对方","「梦见先君，飨而后馈。」——典出颜回护粥的故事，意为「你们所见并非真相，他是无辜的」","「己所不欲，勿施于人。」——在教育那三个壮汉换位思考","「非唯自乐，又能乐时。」——意为「不只是自己快乐，也要让别人快乐」，在劝对方息事宁人"],a:1,n:"「梦见先君，飨而后馈」——颜回做梦梦见先君，醒来要以炊好的饭食先献祭，但锅里的饭沾了灰，他把有灰那部分吃了再给孔子，看起来像偷吃，其实并非如此。意为「你们所见并非真相」。"},
+  {id:26,ch:"天权篇",q:"prologe03末尾出现的神秘黑衣男子（撞倒吕清音后逃跑的那个人），外貌上有何特征？",o:["戴着厚框眼镜，留短发，表情茫然，像迷路的普通学生","比一星略高，黑色风衣，深灰色帽子压得低低的，俊秀的容貌，眼神锋利带着桀骜不驯的气质","留着及肩长发，穿白色衬衫，脸上有一道伤疤，逃跑时回头望了一眼","戴棒球帽，运动装束，逃跑速度极快，跑步姿势像是受过专业训练"],a:1,n:"原文描述：「比我略高，身上穿着一件黑色的风衣，头顶深灰色的帽子，帽子压得低低的。抬起头来，那个俊秀的容貌吓了我一跳——眼神锋利如刀，似乎带着些桀骜不驯的气质。」"},
+  {id:27,ch:"开阳篇",q:"思薇在十二年前见到幼年桃蕊丝时，感知到她心中的什么而判断「这个孩子不是人类」？",o:["感知到她体内流动着「非人类的血脉气息」，与陈丰氏族的气息截然不同","感知到她心中「混杂野性、血腥和杀戮的不祥旋律」","发现她的眼睛在暗处发光，这是亚人种的典型特征","感知到她对着月亮时全身会散发出淡淡的兽气"],a:1,n:"思薇的回忆：幼年「小桃」让她感知到心中「混杂野性、血腥和杀戮的不祥旋律」，因此判断「这个孩子不是人类」。这是开阳篇女主桃蕊丝在其他章节的唯一直接伏笔。"},
+  {id:28,ch:"开阳篇",q:"prologe03中，小翠把「思薇穿女仆装」这件事说成了什么，以此说服叶寄真也差点上当？",o:["「这是让思薇放松心情的休闲疗法，一星说他喜欢，你难道要让思薇独自承受压力？」","「偶尔穿一下就好。但小真你要穿一下看看吗？」——「这是修行之一！」","「这是我们叶家传统上接待贵客时的正式礼服，思薇这样穿是对少爷的尊重」","「这是心理战训练的一环，必须学会在不寻常的装扮下保持冷静」"],a:1,n:"小翠拿出第二套女仆装对寄真说「偶尔也学习一下普通的女孩子的衣装吗」，寄真犹豫时小翠补了一刀：「那是修行之一！」寄真立刻动摇——一星花了五份天妇罗定食才换来小翠收手。"},
+  {id:29,ch:"开阳篇",q:"prologe03中，唐老板为女儿买下隔壁房子后，还做了什么让一星和小兰大惊失色、立刻把唐雨诗拉到一边？",o:["唐老板在门口装了监控摄像头，全天候拍摄一星家门口的动静","阿齐说「设备已经装好了」，唐老板说是「隔音设备」——「为了我在这里的时候，小诗的欢声笑语不会让这臭小子听到」","唐老板表示要在雨诗上课期间每天亲自接送，全程陪同，绝不让一星单独与雨诗相处","唐老板宣布要把一星家的阳台封掉，防止一星翻墙到隔壁"],a:1,n:"阿齐说「设备已装好」，唐老板说那是「隔音设备——为了我在这里的时候，小诗的欢声笑语不会让这臭小子听到」。一星和小兰立刻拉住雨诗：「绝对不要单独留在那个房间！」"},
+  {id:30,ch:"开阳篇",q:"prologe03结尾，一星在图书馆捡回借书证时，黑衣男子逃跑时撞倒了吕清音，现场发生了一连串连锁事故，最终一星被三个壮汉逮住。那个借书证上写的是什么系的名字？",o:["外语系，上面还贴着一张过期的演讲比赛入围贴纸","文中没有交代借书证的具体内容，只说是一星的借书证","计算机系，这是一星系别的直接点明","中文系，因为一星借的是古籍，符合系别"],a:1,n:"原文并未具体描述借书证的系别或内容，只说「那张证」。本题是陷阱题，测试读者是否会把一星在prologe01自述的「计算机系」套进来填答案。实际上文中没有交代借书证的具体内容。"},
+  {id:31,ch:"综合",q:"六篇中，哪两位女主角在「序章」阶段首次出现时都是以「非正常人类的异样性」作为登场方式？",o:["叶寄真（半夜追打男生）与唐雨诗（撞破墙壁进来）","刘莉香（天桥上晕倒，苏醒后发动腿法攻击）与伍思薇（自称「陈家丫环」，从豪华轿车下来）","刘莉香（天桥晕倒，醒后攻击）与吕清音（全程用古文回答，不说普通话）","桃蕊丝（被思薇感知到「不是人类」的旋律）与唐雨诗（被研究所盯上的异能者）"],a:2,n:"刘莉香在天桥突然晕倒→苏醒后认定一星是犯罪分子→发动专业级腿法攻击，用「人格分裂/附体」登场。吕清音在古籍书库从头到尾只说古文，从不说现代语言，用「只说古文的怪人」登场。两者都是以「异样性」而非「美少女邂逅」作为第一印象。"},
+  {id:32,ch:"综合",q:"以下关于「陈丰氏族六个从族」的描述，哪一条是伍思薇在prologe03中明确说出的？",o:["六个从族均在唐朝以前全部灭亡，现在连血脉也无从追查","六个从族中，有一支远走塞外、一支血脉「不是人类」，其余四支在唐朝以前陆续灭亡","六个从族均健在，但散布于世界各地，近百年来刻意切断与伍家的联系","六个从族中有五支在历次战乱中灭亡，唯一存活的一支隐居于某地，身份不明"],a:1,n:"思薇的原话：「六个从族之中有一支远走塞外，血脉不太可能流回中原。另外……那个从族，不是人类。」其余四支「在唐朝以前陆续灭亡」。这段话令小翠少见地皱起了眉头。"}
 ];
 
 const LABELS = ['A','B','C','D'];
+const CH_ORDER = ["玉衡篇","天璇篇","天玑篇","天枢篇","天权篇","开阳篇","综合"];
 const RANKS = [
-  {min:0, max:7,  title:"INITIATE",     sub:"初识星月——才踏入星月夜的大门，好戏还在后面！"},
-  {min:8, max:14, title:"AWAKENED",     sub:"星光初现——已对主线剧情有基本了解，继续深挖！"},
-  {min:15,max:21, title:"TRAVELER",   sub:"七星行者——掌握了大部分关键设定，是位真正的玩家。"},
-  {min:22,max:27, title:"VETERAN",    sub:"资深星夜客——细节把握精准，各章故事融会贯通。"},
-  {min:28,max:31, title:"GUARDIAN",   sub:"天枢守护者——几乎无懈可击，只差临门一脚！"},
-  {min:32,max:32, title:"PHANTOM STAR",sub:"完美星辰·怪盗团荣誉成员——全题命中，向你致敬！"},
+  {min:0, max:7,  icon:"◈", title:"INITIATE",     sub:"潜意识之海——才踏入星月夜的大门，好戏还在后面！"},
+  {min:8, max:14, icon:"◆", title:"AWAKENED",     sub:"人格觉醒——已对主线剧情有基本了解，继续深挖！"},
+  {min:15,max:21, icon:"◇◆", title:"TRAVELER",   sub:"暗影行者——掌握了大部分关键设定，是位真正的玩家。"},
+  {min:22,max:27, icon:"★",  title:"VETERAN",    sub:"资深探索者——细节把握精准，各章故事融会贯通。"},
+  {min:28,max:31, icon:"★★", title:"GUARDIAN",   sub:"天鹅绒室贵客——几乎无懈可击，只差临门一脚！"},
+  {min:32,max:32, icon:"★★★","title":"WILD CARD",sub:"不羁之绊·完美星辰——全题命中，真正的资深玩家，向你致敬！"}
 ];
 
+/* ═══ STATE ════════════════════════════════════════ */
 let ans = new Array(QS.length).fill(-1);
 let submitted = false;
 
+/* ═══ RENDER ═══════════════════════════════════════ */
 function render(){
   const body = document.getElementById('quiz-body');
   body.innerHTML = '';
@@ -322,8 +526,22 @@ function render(){
   QS.forEach((q, qi) => {
     if(q.ch !== lastCh){
       lastCh = q.ch;
-      body.innerHTML += `<div class="chapter-divider"><div class="chap-name">${q.ch}</div></div>`;
+      
+      const div = document.createElement('div');
+      div.className = 'chap-banner';
+      div.innerHTML = `
+        <div class="chap-banner-img" style="background-image: url('${CHAP_BG[q.ch] || 'EP1.jpg'}');"></div>
+        <div class="chap-banner-content">
+          <div class="chap-icon">/ TARGET</div>
+          <div class="chap-name">${q.ch}</div>
+        </div>`;
+      body.appendChild(div);
     }
+
+    const card = document.createElement('div');
+    card.className = 'q-card';
+    card.id = `card-${qi}`;
+    card.style.animationDelay = `${qi * 0.05}s`;
 
     const optsHtml = q.o.map((opt, oi) => `
       <label class="opt" id="opt-${qi}-${oi}" data-qi="${qi}" data-oi="${oi}">
@@ -332,37 +550,46 @@ function render(){
         <span class="opt-text">${opt}</span>
       </label>`).join('');
 
-    body.innerHTML += `
-      <div class="q-card" id="card-${qi}">
-        <div class="q-inner">
-          <div class="q-meta"><div class="q-num">Q${String(q.id).padStart(2,'0')}</div></div>
-          <div class="q-text">${q.q}</div>
-          <div class="options" id="opts-${qi}">${optsHtml}</div>
-          <div class="q-note" id="note-${qi}">Intel: ${q.n}</div>
-        </div>
-      </div>`;
-  });
+    card.innerHTML = `
+      <div class="q-num-badge">Q${String(q.id).padStart(2,'0')}</div>
+      <div class="q-chapter-badge">${q.ch}</div>
+      <div class="q-text">${q.q}</div>
+      <div class="options" id="opts-${qi}">${optsHtml}</div>
+      <div class="q-note" id="note-${qi}">${q.n}</div>
+    `;
 
-  document.querySelectorAll('.opt').forEach(lbl => {
-    lbl.addEventListener('click', () => {
-      if(submitted) return;
-      const qi = +lbl.dataset.qi, oi = +lbl.dataset.oi;
-      document.getElementById(`opts-${qi}`).querySelectorAll('.opt').forEach(l => l.classList.remove('selected'));
-      lbl.classList.add('selected');
-      lbl.querySelector('input').checked = true;
-      ans[qi] = oi;
-      updateProg();
+    body.appendChild(card);
+
+    card.querySelectorAll('.opt').forEach(lbl => {
+      lbl.addEventListener('click', () => {
+        if(submitted) return;
+        const qi2 = +lbl.dataset.qi, oi2 = +lbl.dataset.oi;
+        card.querySelectorAll('.opt').forEach(l => l.classList.remove('selected'));
+        lbl.classList.add('selected');
+        lbl.querySelector('input').checked = true;
+        ans[qi2] = oi2;
+        updateProg();
+      });
     });
   });
+
+  const io = new IntersectionObserver(entries => {
+    entries.forEach(e => { if(e.isIntersecting) e.target.style.opacity='1'; });
+  }, {threshold:.05});
+  document.querySelectorAll('.q-card').forEach(el => io.observe(el));
+
+  document.getElementById('prog-panel').classList.add('vis');
 }
 
 function updateProg(){
   const done = ans.filter(a=>a>=0).length;
-  document.getElementById('prog-fill').style.width = Math.round(done/QS.length*100)+'%';
-  document.getElementById('prog-count').innerText = `${done}/${QS.length}`;
+  const pct = Math.round(done/QS.length*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-count').innerHTML = `${done}<span style="font-size:24px;color:rgba(0,0,0,0.5)">/${QS.length}</span>`;
   document.getElementById('btn-submit').disabled = (done < QS.length);
 }
 
+/* ═══ SUBMIT ════════════════════════════════════════ */
 document.getElementById('btn-submit').addEventListener('click', () => {
   if(submitted) return;
   submitted = true;
@@ -371,7 +598,9 @@ document.getElementById('btn-submit').addEventListener('click', () => {
   let correct = 0;
   QS.forEach((q, qi) => {
     const chosen = ans[qi], right = q.a;
-    document.getElementById(`opts-${qi}`).classList.add('done');
+    const optsEl = document.getElementById(`opts-${qi}`);
+    optsEl.classList.add('done');
+
     if(chosen === right){
       correct++;
       document.getElementById(`opt-${qi}-${chosen}`).classList.add('correct-ans');
@@ -385,27 +614,110 @@ document.getElementById('btn-submit').addEventListener('click', () => {
   showResult(correct);
 });
 
+/* ═══ RESULT ═══════════════════════════════════════ */
 function showResult(correct){
+  const total = QS.length;
+  const score = correct * 3;
+  const wrong = total - correct;
   const rank = RANKS.find(r => correct >= r.min && correct <= r.max) || RANKS[0];
+
+  const chData = {};
+  QS.forEach((q, qi) => {
+    if(!chData[q.ch]) chData[q.ch] = {total:0, correct:0, qs:[]};
+    chData[q.ch].total++;
+    const ok = ans[qi] === q.a;
+    if(ok) chData[q.ch].correct++;
+    chData[q.ch].qs.push({id:q.id, ok});
+  });
+
+  const chHtml = CH_ORDER.filter(ch => chData[ch]).map(ch => {
+    const c = chData[ch];
+    const dots = c.qs.map(item =>
+      `<div class="dot ${item.ok?'c':'w'}" data-t="Q${item.id}">${item.id}</div>`
+    ).join('');
+    return `<div class="chap-row">
+      <div class="chap-row-name">${ch}</div>
+      <div class="chap-dots">${dots}</div>
+      <div class="chap-frac">${c.correct}/${c.total}</div>
+    </div>`;
+  }).join('');
+
   const panel = document.getElementById('result');
   panel.innerHTML = `
     <div class="result-hero">
-      <div class="result-rank-tag">MISSION CLEARED</div>
-      <div class="result-title">${rank.title}</div>
-      <div style="font-weight:700; margin-top:10px;">${rank.sub}</div>
+      <div class="result-hero-img"></div>
+      <div class="result-hero-content">
+        <div class="result-rank-tag">FINAL SCORE</div>
+        <div class="result-title">${rank.title}</div>
+        <div class="result-desc">${rank.sub}</div>
+      </div>
     </div>
+
     <div class="score-grid">
-      <div class="score-box"><div class="score-val">${correct * 3}</div><div class="score-label">TOTAL SCORE</div></div>
-      <div class="score-box"><div class="score-val">${correct}</div><div class="score-label">CORRECT</div></div>
-      <div class="score-box"><div class="score-val">${QS.length - correct}</div><div class="score-label">WRONG</div></div>
-      <div class="score-box"><div class="score-val">${Math.round(correct/QS.length*100)}%</div><div class="score-label">ACCURACY</div></div>
+      <div class="score-box">
+        <span class="score-val anim" id="sv-score">0</span>
+        <div class="score-label">TOTAL SCORE</div>
+      </div>
+      <div class="score-box">
+        <span class="score-val anim" id="sv-correct">0</span>
+        <div class="score-label">CORRECT</div>
+      </div>
+      <div class="score-box">
+        <span class="score-val anim" id="sv-wrong">0</span>
+        <div class="score-label">WRONG</div>
+      </div>
+      <div class="score-box">
+        <span class="score-val anim" id="sv-pct">0%</span>
+        <div class="score-label">ACCURACY</div>
+      </div>
     </div>
-    <button class="btn-retry" onclick="location.reload()">RETRY MISSION</button>
+
+    <div>
+      <div class="breakdown-title">ANALYSIS BREAKDOWN</div>
+      ${chHtml}
+    </div>
+
+    <button class="btn-retry" onclick="retry()">REBOOT SYSTEM</button>
   `;
+
   panel.classList.add('vis');
+
+  setTimeout(() => {
+    animNum('sv-score', 0, score, 1200, v => v);
+    animNum('sv-correct', 0, correct, 900, v => v);
+    animNum('sv-wrong', 0, wrong, 900, v => v);
+    animNum('sv-pct', 0, Math.round(correct/total*100), 1000, v => v+'%');
+  }, 300);
+
   setTimeout(() => panel.scrollIntoView({behavior:'smooth',block:'start'}), 200);
 }
 
+function animNum(id, from, to, dur, fmt){
+  const el = document.getElementById(id);
+  if(!el) return;
+  const start = performance.now();
+  function step(now){
+    const t = Math.min((now-start)/dur, 1);
+    const ease = 1-Math.pow(1-t,3); // ease-out cubic
+    el.textContent = fmt(Math.round(from + (to-from)*ease));
+    if(t < 1) requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
+
+/* ═══ RETRY ════════════════════════════════════════ */
+function retry(){
+  ans = new Array(QS.length).fill(-1);
+  submitted = false;
+  document.getElementById('result').classList.remove('vis');
+  document.getElementById('result').innerHTML = '';
+  document.getElementById('submit-bar').classList.remove('hidden');
+  render();
+  updateProg();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+/* ═══ INIT ══════════════════════════════════════════ */
 render();
 updateProg();
 </script>
